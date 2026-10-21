@@ -18,9 +18,11 @@ pnpm workspace, Node >= 20 (CI and the site build use Node 22), TypeScript, ESM 
   tables, human-step solver, difficulty rater, deterministic generator, daily puzzle seed, and text
   formats.
 - `packages/app` — the PWA (React 19 + Vite 8). The app UI; runs the solver/generator in a Web Worker.
-  `src/components/` holds the UI pieces (top bar, digit pad, side panel, sum combination helper,
-  dialogs), `game.ts` the pure game state, `store.ts` the localStorage helpers, `ui.ts` settings and
-  shared types, `public/sw.js` the service worker.
+  `src/components/` holds the UI pieces (top bar, digit pad, panels, dialogs), `src/hooks/` the React
+  hooks that own state (the game session, solver tools, records, settings), `game.ts` the pure game
+  state and board helpers, `store.ts` the localStorage helpers (game, history, statistics),
+  `ui.ts` settings and shared types, `public/sw.js` the service worker. `App.tsx` only wires the
+  hooks to the screen.
 - `packages/website` — a dependency-free static site generator (plain `.mjs`). Pages: home, the
   technique guides (`techniques.mjs`), the interactive Sum Combinations Cheat Sheet
   (`combinations.mjs`), the Learn pages (`learn.mjs`), the manual (`manual.mjs`), about/privacy, and
@@ -56,8 +58,8 @@ Before finishing a change, run `pnpm typecheck` and `pnpm test`, and the affecte
 - **App/worker split.** The app talks to the solver through `packages/app/src/solverClient.ts` →
   `worker.ts` → `solverApi.ts`. Keep `solverApi.ts` pure and testable; keep the message shapes in
   `protocol.ts` in sync across all three.
-- **Game logic is pure.** `packages/app/src/game.ts` is pure and unit-tested; keep UI concerns out of
-  it.
+- **Game logic is pure.** `packages/app/src/game.ts` and `store.ts` are pure and unit-tested; keep
+  UI concerns out of them and put new React state in a hook rather than in `App.tsx`.
 - **The website is generated.** `packages/website/src/build.mjs` writes every page from string
   literals and emits no separate JS assets (scripts are inlined, e.g. `gate.mjs`, `consent.mjs`).
   `/play/` is the app's own Vite build copied verbatim.
