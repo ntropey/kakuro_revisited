@@ -101,6 +101,11 @@
   box-sizing: border-box;
 }
 
+:focus-visible {
+  outline: 2px solid var(--accent, #2b4ea2);
+  outline-offset: 2px;
+}
+
 html,
 body {
   margin: 0;
@@ -865,6 +870,7 @@ input[type='number'] {
    to stays on screen. */
 .sheet.snap-peek {
   max-height: 78vh;
+  max-height: 78dvh;
   transform: translateY(calc(100% - 30px));
 }
 
