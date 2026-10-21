@@ -17,6 +17,7 @@ import { PathPanel } from '../src/components/PathPanel';
 import { ProofPanel } from '../src/components/ProofPanel';
 import { SettingsSheet } from '../src/components/SettingsSheet';
 import { SolvedDialog } from '../src/components/SolvedDialog';
+import { StatsPanel } from '../src/components/StatsPanel';
 import { TopBar } from '../src/components/TopBar';
 import { DEFAULT_SETTINGS } from '../src/ui';
 import type { HintResult } from '../src/protocol';
@@ -95,6 +96,7 @@ describe('Component rendering', () => {
           onCoach={noop}
           onHints={noop}
           onCombinations={noop}
+          onStats={noop}
           onShare={noop}
           onSettings={noop}
         />,
@@ -133,6 +135,18 @@ describe('Component rendering', () => {
         <SolvedDialog levelName="Easy" elapsedMs={65_000} hintsUsed={0} onShare={noop} onNew={noop} onClose={noop} />,
       ),
       renderToStaticMarkup(<CombinationHelper />),
+      renderToStaticMarkup(<StatsPanel stats={{ solved: 0, dailyStreak: 0, bestSeconds: 0, byLevel: {} }} streak={0} history={[]} onClose={noop} />),
+      renderToStaticMarkup(
+        <StatsPanel
+          stats={{ solved: 3, dailyStreak: 2, bestSeconds: 95, byLevel: { 2: 2, 3: 1 } }}
+          streak={2}
+          history={[
+            { id: 'a', puzzle: 'x', level: 2, score: 10, seconds: 95, solved: true, daily: '2026-10-21', at: 1_700_000_000_000 },
+            { id: 'b', puzzle: 'y', level: 3, score: 10, seconds: 240, solved: true, at: 1_700_000_100_000 },
+          ]}
+          onClose={noop}
+        />,
+      ),
       renderToStaticMarkup(
         <IdlePanel filled={12} total={40} onCoach={noop} onHints={noop} onCombinations={noop} />,
       ),

@@ -108,6 +108,16 @@ test('the app is copied under /play/', () => {
   assert.ok(existsSync(join(dist, 'play/manifest.webmanifest')), 'play manifest missing');
 });
 
+test('the app registers its service worker next to itself, so it works under /play/', () => {
+  assert.ok(existsSync(join(dist, 'play/sw.js')), 'play/sw.js missing');
+  const assets = join(dist, 'play/assets');
+  const bundle = readdirSync(assets).find((f) => /^index-.*\.js$/.test(f));
+  assert.ok(bundle, 'the app bundle is missing');
+  const code = readFileSync(join(assets, bundle), 'utf8');
+  assert.ok(code.includes('register(`./sw.js`)') || code.includes('register("./sw.js")') || code.includes("register('./sw.js')"), 'sw.js is not registered relative to the page');
+  assert.ok(!/register\(["'`]\/sw\.js/.test(code), 'sw.js is registered at the site root');
+});
+
 test('user-facing text and docs use American spelling', () => {
   const repo = join(root, '..', '..');
   const roots = ['packages/app/src', 'packages/website/src', 'README.md', 'AGENTS.md'];

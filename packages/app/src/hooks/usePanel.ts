@@ -5,7 +5,7 @@
 import { useState } from 'react';
 import type { Snap } from '../components/BottomSheet';
 
-export type PanelKind = 'coach' | 'hints' | 'combinations' | 'path' | 'share' | 'settings' | 'prove' | null;
+export type PanelKind = 'coach' | 'hints' | 'combinations' | 'path' | 'share' | 'settings' | 'prove' | 'stats' | null;
 
 export function usePanel(wide: boolean) {
   const [panel, setPanel] = useState<PanelKind>(null);

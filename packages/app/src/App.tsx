@@ -2,26 +2,27 @@
  * Kakuro Revisited PWA. GPL-3.0-or-later; see LICENSE.
  * The app shell: it wires the game session, the solver tools and the panels to the screen.
  */
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { blockedDigits, remainingDigitCounts, wrongCells } from './game';
+import { useRef, useState } from 'react';
 import { Board } from './components/Board';
 import { BottomSheet } from './components/BottomSheet';
 import { DigitPad } from './components/DigitPad';
 import { PanelHost } from './components/PanelHost';
 import { SolvedDialog } from './components/SolvedDialog';
 import { TopBar } from './components/TopBar';
+import { useBoardView } from './hooks/useBoardView';
 import { useGameSession } from './hooks/useGameSession';
 import { useKeyboardPlay } from './hooks/useKeyboardPlay';
 import { useMediaQuery } from './hooks/useMediaQuery';
 import { usePanel } from './hooks/usePanel';
+import { useRecords } from './hooks/useRecords';
+import { useSettings } from './hooks/useSettings';
 import { useSolverClient } from './hooks/useSolverClient';
 import { useSolverTools } from './hooks/useSolverTools';
-import { loadSettings, saveSettings } from './store';
-import { levelName, type Settings } from './ui';
+import { levelName } from './ui';
 
 export function App() {
   const getClient = useSolverClient();
-  const [settings, setSettings] = useState<Settings>(() => loadSettings(window.localStorage));
+  const { settings, onSettings } = useSettings();
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState('');
   const wide = useMediaQuery('(min-width: 960px)');
@@ -30,12 +31,14 @@ export function App() {
   // The session starts puzzles and the tools hold what a puzzle showed, so the session reaches the
   // tools through a ref that is filled in below.
   const resetTools = useRef(() => {});
+  const records = useRecords();
   const session = useGameSession({
     settings,
     getClient,
     setBusy,
     setStatus,
     onPuzzleStart: () => resetTools.current(),
+    onSolved: records.recordSolved,
   });
   const { game, cells, elapsedMs } = session;
   const tools = useSolverTools({ getClient, game, settings, openPanel, setBusy, setStatus });
@@ -50,18 +53,6 @@ export function App() {
     onToggleNotes: session.onToggleNotes,
   });
 
-  // The theme.
-  useEffect(() => {
-    const root = document.documentElement;
-    if (settings.theme === 'auto') root.removeAttribute('data-theme');
-    else root.setAttribute('data-theme', settings.theme);
-  }, [settings.theme]);
-
-  const onSettings = (next: Settings) => {
-    setSettings(next);
-    saveSettings(window.localStorage, next);
-  };
-
   const onApplyCoach = () => {
     if (!game || !tools.marks) return;
     session.applyMarks(tools.marks);
@@ -69,9 +60,7 @@ export function App() {
     tools.setMarks(null);
   };
 
-  const counts = useMemo(() => (game ? remainingDigitCounts(game) : {}), [game]);
-  const disabledDigits = useMemo(() => (game ? blockedDigits(cells, game) : new Set<number>()), [game, cells]);
-  const wrong = useMemo(() => (game ? wrongCells(game) : new Set<number>()), [game]);
+  const { counts, disabledDigits, wrong } = useBoardView(game, cells);
 
   const title = game?.daily ? `Daily ${game.daily}` : 'Practice';
   // While the bottom sheet is pulled up, the page keeps room below the board so it can scroll clear.
@@ -85,6 +74,7 @@ export function App() {
       elapsedMs={elapsedMs}
       settings={settings}
       tools={tools}
+      records={records}
       onSettings={onSettings}
       onOpen={openPanel}
       onClose={closePanel}
@@ -105,6 +95,7 @@ export function App() {
         onCoach={() => void tools.openCoach()}
         onHints={() => void tools.openHints()}
         onCombinations={() => openPanel('combinations')}
+        onStats={() => openPanel('stats')}
         onShare={() => openPanel('share')}
         onSettings={() => openPanel('settings')}
       />
@@ -174,6 +165,8 @@ export function App() {
           elapsedMs={elapsedMs}
           hintsUsed={game?.hintsUsed ?? 0}
           daily={game?.daily}
+          newBest={records.lastSolve?.newBest}
+          streak={records.lastSolve?.streak}
           onShare={() => openPanel('share')}
           onNew={() => void session.loadPuzzle('new')}
           onClose={() => session.setSolved(false)}
