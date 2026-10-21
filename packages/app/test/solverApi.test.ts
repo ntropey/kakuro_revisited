@@ -5,7 +5,7 @@
  */
 import { describe, expect, it } from 'vitest';
 import { CELL_COUNT, ALL_DIGITS_MASK, parseKakuro } from '@kakuro/core';
-import { buildBoard, candidates, hint } from '../src/solverApi';
+import { allHints, buildBoard, candidates, hint } from '../src/solverApi';
 
 const SOLUTION_GRID = [
   '#########',
@@ -68,5 +68,12 @@ describe('Solver worker API', () => {
       if ((step.marks?.place ?? []).length === 0) break;
     }
     expect(steps).toBeGreaterThan(0);
+  });
+
+  it('gives every listed technique a coach walkthrough, so picking one can open the coach', () => {
+    const values = new Array<number>(CELL_COUNT).fill(0);
+    const { results } = allHints(givens, values, new Array<number>(CELL_COUNT).fill(ALL_DIGITS_MASK), 5);
+    expect(results.length).toBeGreaterThan(1);
+    for (const r of results) expect(r.coach?.length, r.name).toBeGreaterThan(0);
   });
 });

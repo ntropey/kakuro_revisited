@@ -138,7 +138,8 @@ export function allHints(
 ): { results: HintResult[]; total: Record<string, number> } {
   const board = buildBoard(puzzle, values);
   const { steps, total } = finder.findAllSteps(board, coreLevel(level), 12, new Set(disabled));
-  const results = steps.map((s) => toHint(s, board, false));
+  // Each hint carries its walkthrough, because picking one from the list opens it in the coach.
+  const results = steps.map((s) => toHint(s, board, true));
   return { results, total };
 }
 
