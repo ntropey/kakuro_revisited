@@ -74,6 +74,8 @@ export function App() {
   const wrong = useMemo(() => (game ? wrongCells(game) : new Set<number>()), [game]);
 
   const title = game?.daily ? `Daily ${game.daily}` : 'Practice';
+  // While the bottom sheet is pulled up, the page keeps room below the board so it can scroll clear.
+  const sheetOpen = !!panel && !wide && snap !== 'peek';
 
   const panelContent = (
     <PanelHost
@@ -91,7 +93,7 @@ export function App() {
   );
 
   return (
-    <div className="app">
+    <div className={`app${sheetOpen ? ' sheet-open' : ''}`}>
       <TopBar
         title={title}
         level={game?.level ?? settings.puzzleLevel}

@@ -313,6 +313,10 @@ h3 {
   max-height: calc(100vh - 6rem);
 }
 
+.app.sheet-open .layout {
+  padding-bottom: 52dvh;
+}
+
 @media (min-width: 960px) {
   .layout {
     padding-bottom: 1rem;
@@ -850,22 +854,28 @@ input[type='number'] {
   border-top: 1px solid var(--line);
   border-radius: 14px 14px 0 0;
   box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.14);
-  max-height: 78vh;
   display: flex;
   flex-direction: column;
-  transition: transform 0.18s ease;
+  transition:
+    transform 0.18s ease,
+    max-height 0.18s ease;
 }
 
+/* The snaps change the height instead of sliding the sheet down, so everything the sheet scrolls
+   to stays on screen. */
 .sheet.snap-peek {
+  max-height: 78vh;
   transform: translateY(calc(100% - 30px));
 }
 
 .sheet.snap-half {
-  transform: translateY(38%);
+  max-height: 48vh;
+  max-height: 48dvh;
 }
 
 .sheet.snap-full {
-  transform: translateY(0);
+  max-height: 78vh;
+  max-height: 78dvh;
 }
 
 @media (max-width: 959px) {
