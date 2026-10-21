@@ -499,10 +499,10 @@ export class KakuroGenerator {
     // easy levels: the avoid-partitions fill rarely succeeds on it.
     const order =
       level <= 2
-        ? [6, 7, 6, 0, 7, 1, 6, 2, 7, 3]
+        ? [6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 0, 1, 2, 3]
         : level === 3
-          ? [8, 9, 6, 8, 9, 2, 6, 3]
-          : [9, 8, 6, 9, 8, 6, 5, 4, 3];
+          ? [8, 9, 6, 8, 9, 6, 8, 9, 6, 2, 3]
+          : [9, 8, 6, 9, 8, 6, 9, 8, 6, 9, 5, 4, 3];
 
     // Level 1 and 2 puzzles fall to magic blocks, harder ones need the advanced techniques, so the
     // fill avoids unique sum partitions from level 3 upwards.
