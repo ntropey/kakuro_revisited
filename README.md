@@ -7,7 +7,7 @@
     <a href="https://kakurorevisited.com/"><strong>Website</strong></a> ·
     <a href="https://kakurorevisited.com/play/"><strong>Open Solver</strong></a> ·
     <a href="https://kakurorevisited.com/play/?daily=1"><strong>Daily Puzzle</strong></a> ·
-    <a href="https://kakurorevisited.com/combinations/"><strong>Sum Combinations Cheat Sheet</strong></a> ·
+    <a href="https://kakurorevisited.com/combinations.html"><strong>Sum Combinations Cheat Sheet</strong></a> ·
     <a href="https://kakurorevisited.com/techniques/"><strong>Technique Guides</strong></a> ·
     <a href="https://kakurorevisited.com/manual/"><strong>Manual</strong></a>
   </p>
@@ -51,8 +51,10 @@ Built directly on top of the solver's bitmask and sum-partition engine in [`aiCo
 6. **Mandatory Digit in Run (`MANDATORY_DIGIT`)** — When a digit appears in *every* remaining valid combination for a run (such as `1` and `2` in `7 in 3 = {1,2,4}` or `8 in 3 = {1,2,5}`) and only one cell in that run can accept it, that cell must take that digit.
 7. **Hidden Single in Run (`HIDDEN_SINGLE_RUN`)** — A required digit for the only remaining partition of a run fits in just one cell of that run.
 8. **Naked Pair / Triple in Run (`NAKED_PAIR`, `NAKED_TRIPLE`)** — Two or three cells in the same run hold only the same two or three candidates, locking those digits out of the rest of the run.
-9. **Hidden Pair in Run (`HIDDEN_PAIR`)** — Two mandatory digits of a run are restricted to the same two cells, eliminating other candidates from those two cells.
-10. **Locked Sum Residual (`LOCKED_SUM_RESIDUAL`)** — Uses the difference between total Across clues and Down clues in an overlapping sector (or locked pair sum inside a run) to deduce forced residual sums and placements.
+9. **Hidden Pair / Triple in Run (`HIDDEN_PAIR`, `HIDDEN_TRIPLE`)** — Two or three mandatory digits of a run are restricted to the same cells, eliminating other candidates from those cells.
+10. **Forced Combination / Partition Matching (`FORCED_COMBINATION`)** — Exact bipartite matching of the remaining digits to the cells of a run, so a digit is only placed when every assignment agrees.
+11. **Locked Sum Residual (`LOCKED_SUM_RESIDUAL`)** — A group of cells locked to a fixed sum is subtracted from the run, or two overlapping runs are compared, to force a residual cell.
+12. **Contradiction Forcing (`CONTRADICTION_CHAIN`)** — A hypothesis is propagated through forced moves until a sum overflow, sum underflow, duplicate digit or starved cell proves it wrong.
 
 ---
 
