@@ -8,6 +8,7 @@
   "scripts": {
     "build": "node src/build.mjs",
     "typecheck": "node --check src/build.mjs && node --check src/techniques.mjs && node --check src/combinations.mjs && node --check src/consent.mjs && node --check src/diagram.mjs && node --check src/learn.mjs && node --check src/manual.mjs",
+    "pretest": "pnpm --filter @kakuro/app build",
     "test": "node --test test/build.test.mjs"
   }
 }
