@@ -4,7 +4,7 @@
  *
  * Nothing in here touches React, the DOM or the solver, so every rule can be unit tested.
  */
-import { ALL_DIGITS_MASK, CELL_COUNT, digitBit, maskToDigits } from '@kakuro/core';
+import { ALL_DIGITS_MASK, CELL_COUNT, GRID_SIZE, digitBit, maskToDigits } from '@kakuro/core';
 import type { PathEntry, PuzzleInfo } from './protocol';
 
 export interface GameSnapshot {
@@ -210,4 +210,104 @@ export function noteDigits(state: GameState, cell: number): number[] {
 /** The candidates the solver allows in a cell as a list of digits. */
 export function candidateDigits(state: GameState, cell: number): number[] {
   return maskToDigits(state.cands[cell]);
+}
+
+/** The least a board cell must say about itself for the helpers below. */
+export interface CellKind {
+  kind: 'block' | 'white';
+}
+
+/** The white cells that share an Across or Down run with `cell`, not counting `cell` itself. */
+export function runPeers(cells: readonly CellKind[], cell: number): number[] {
+  const out: number[] = [];
+  const row = Math.floor(cell / GRID_SIZE);
+  const col = cell % GRID_SIZE;
+  for (let c = 0; c < GRID_SIZE; c++) {
+    const idx = row * GRID_SIZE + c;
+    if (idx !== cell && cells[idx]?.kind === 'white') out.push(idx);
+  }
+  for (let r = 0; r < GRID_SIZE; r++) {
+    const idx = r * GRID_SIZE + col;
+    if (idx !== cell && cells[idx]?.kind === 'white') out.push(idx);
+  }
+  return out;
+}
+
+/** A cell as `r2c3`, or `-` when nothing is selected. */
+export function cellLabel(cell: number): string {
+  if (cell < 0) return '-';
+  return `r${Math.floor(cell / GRID_SIZE) + 1}c${(cell % GRID_SIZE) + 1}`;
+}
+
+/**
+ * How many of each digit are still to be placed: the digit's count in the solution minus the
+ * count on the board. It goes negative when the player has written a digit too often.
+ */
+export function remainingDigitCounts(state: GameState): Record<number, number> {
+  const out: Record<number, number> = {};
+  for (let i = 0; i < CELL_COUNT; i++) {
+    const v = state.solution[i] ?? 0;
+    if (v > 0) out[v] = (out[v] ?? 0) + 1;
+  }
+  for (let i = 0; i < CELL_COUNT; i++) {
+    const v = state.values[i] ?? 0;
+    if (v > 0) out[v] = (out[v] ?? 0) - 1;
+  }
+  return out;
+}
+
+/** The digits the selected cell cannot take because a run it sits in already holds them. */
+export function blockedDigits(cells: readonly CellKind[], state: GameState): Set<number> {
+  const out = new Set<number>();
+  if (state.selected < 0 || cells[state.selected]?.kind !== 'white') return out;
+  for (const other of runPeers(cells, state.selected)) {
+    const v = state.values[other] ?? 0;
+    if (v > 0) out.add(v);
+  }
+  return out;
+}
+
+/** The digits that can still go in the selected cell; empty when no white cell is selected. */
+export function allowedDigits(cells: readonly CellKind[], state: GameState): number[] {
+  if (state.selected < 0 || cells[state.selected]?.kind !== 'white') return [];
+  const blocked = blockedDigits(cells, state);
+  const out: number[] = [];
+  for (let d = 1; d <= 9; d++) if (!blocked.has(d)) out.push(d);
+  return out;
+}
+
+/** The cells whose digit differs from the solution. */
+export function wrongCells(state: GameState): Set<number> {
+  const out = new Set<number>();
+  for (let i = 0; i < CELL_COUNT; i++) if (cellIsWrong(state, i)) out.add(i);
+  return out;
+}
+
+/** How many white cells hold a digit, and how many white cells there are. */
+export function whiteProgress(cells: readonly CellKind[], state: GameState): { filled: number; total: number } {
+  let total = 0;
+  let filled = 0;
+  for (let i = 0; i < CELL_COUNT; i++) {
+    if (cells[i]?.kind !== 'white') continue;
+    total++;
+    if ((state.values[i] ?? 0) > 0) filled++;
+  }
+  return { filled, total };
+}
+
+/**
+ * The white cell an arrow key moves the selection to, or -1 when there is none.
+ *
+ * Left and right step one cell, up and down step one row, and block cells are skipped. With
+ * nothing selected the search starts at the first cell of the board.
+ */
+export function moveSelection(
+  cells: readonly CellKind[],
+  selected: number,
+  key: 'ArrowLeft' | 'ArrowRight' | 'ArrowUp' | 'ArrowDown',
+): number {
+  const step = key === 'ArrowLeft' ? -1 : key === 'ArrowRight' ? 1 : key === 'ArrowUp' ? -GRID_SIZE : GRID_SIZE;
+  let i = selected < 0 ? 0 : selected + step;
+  while (i >= 0 && i < CELL_COUNT && cells[i]?.kind !== 'white') i += step;
+  return i >= 0 && i < CELL_COUNT ? i : -1;
 }

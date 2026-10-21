@@ -42,6 +42,8 @@ export const SETTINGS_KEY = 'kakuro-revisited:settings';
 export const GAME_KEY = 'kakuro-revisited:game';
 export const HISTORY_KEY = 'kakuro-revisited:history';
 export const STATS_KEY = 'kakuro-revisited:stats';
+/** The bank puzzles the player has already seen, per level. */
+export const SEEN_KEY = 'kakuro-revisited:seen';
 
 export const LEVEL_NAMES = ['', 'Trivial', 'Easy', 'Medium', 'Hard', 'Extreme'];
 
