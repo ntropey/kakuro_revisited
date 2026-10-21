@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="96" fill="#F5F2EA"/>
+  <rect x="96" y="96" width="320" height="320" rx="16" fill="#FFFDF8" stroke="#1C1B18" stroke-width="12"/>
+  <rect x="96" y="96" width="160" height="160" fill="#25231F"/>
+  <line x1="96" y1="96" x2="256" y2="256" stroke="#F5F2EA" stroke-width="6"/>
+  <line x1="256" y1="96" x2="256" y2="416" stroke="#1C1B18" stroke-width="8"/>
+  <line x1="96" y1="256" x2="416" y2="256" stroke="#1C1B18" stroke-width="8"/>
+  <text x="206" y="152" font-family="ui-monospace, monospace" font-size="48" font-weight="700" fill="#F5F2EA" text-anchor="middle" dominant-baseline="central">16</text>
+  <text x="144" y="214" font-family="ui-monospace, monospace" font-size="48" font-weight="700" fill="#F5F2EA" text-anchor="middle" dominant-baseline="central">17</text>
+  <text x="336" y="178" font-family="Georgia, serif" font-size="92" font-weight="600" fill="#2B4EA2" text-anchor="middle" dominant-baseline="central">9</text>
+  <text x="176" y="338" font-family="Georgia, serif" font-size="92" font-weight="600" fill="#1C1B18" text-anchor="middle" dominant-baseline="central">8</text>
+  <text x="336" y="338" font-family="Georgia, serif" font-size="92" font-weight="600" fill="#2B4EA2" text-anchor="middle" dominant-baseline="central">7</text>
+</svg>
