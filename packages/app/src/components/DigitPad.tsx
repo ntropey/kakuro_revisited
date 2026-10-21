@@ -27,7 +27,7 @@ export function DigitPad({ counts, notesMode, disabled, onDigit, onErase, onTogg
             disabled={disabled.has(d)}
           >
             <span className="digit-value">{d}</span>
-            <span className="digit-count">{counts[d] ?? 0}</span>
+            <span className="digit-count">{Math.max(0, counts[d] ?? 0)}</span>
           </button>
         ))}
       </div>

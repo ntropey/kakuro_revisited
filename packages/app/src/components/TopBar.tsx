@@ -52,7 +52,7 @@ export function TopBar({
         {showTimer ? <span className="timer">{time}</span> : null}
       </div>
       <nav className="top-actions">
-        <button type="button" onClick={onNew} title="New puzzle">
+        <button type="button" className="primary" onClick={onNew} title="New puzzle">
           New
         </button>
         <button type="button" onClick={onDaily} title="Daily puzzle">
@@ -70,10 +70,10 @@ export function TopBar({
         <button type="button" onClick={onShare} title="Share the result">
           Share
         </button>
-        <button type="button" onClick={onSettings} title="Settings" aria-label="Settings">
-          ⚙
-        </button>
       </nav>
+      <button type="button" className="ghost settings-btn" onClick={onSettings} title="Settings" aria-label="Settings">
+        ⚙
+      </button>
     </header>
   );
 }

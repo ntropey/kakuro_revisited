@@ -11,6 +11,7 @@ import { CombinationHelper } from './components/CombinationHelper';
 import { DailyShare } from './components/DailyShare';
 import { DigitPad } from './components/DigitPad';
 import { HintsPanel } from './components/HintsPanel';
+import { IdlePanel } from './components/IdlePanel';
 import { PathPanel } from './components/PathPanel';
 import { ProofPanel } from './components/ProofPanel';
 import { SettingsSheet } from './components/SettingsSheet';
@@ -621,8 +622,25 @@ export function App() {
             }}
           />
         );
-      default:
-        return null;
+      default: {
+        if (!game) return null;
+        let total = 0;
+        let filled = 0;
+        for (let i = 0; i < CELL_COUNT; i++) {
+          if (cells[i]?.kind !== 'white') continue;
+          total++;
+          if ((game.values[i] ?? 0) > 0) filled++;
+        }
+        return (
+          <IdlePanel
+            filled={filled}
+            total={total}
+            onCoach={() => void openCoach()}
+            onHints={() => void openHints()}
+            onCombinations={() => openPanel('combinations')}
+          />
+        );
+      }
     }
   };
 
