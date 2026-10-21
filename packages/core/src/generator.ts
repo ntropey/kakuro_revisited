@@ -267,11 +267,15 @@ export function rectangleShiftExists(
  * - `avoid` rejects a fill as soon as a run ends up with a unique sum partition, which pushes the
  *   puzzle towards the harder techniques.
  * - `any` lets the digits fall where they may.
+ *
+ * The search gives up after `maxNodes` steps and returns null, so an unlucky fill on a dense layout
+ * cannot stall the caller; the generator just tries again with a new random fill.
  */
 export function fillLayout(
   layout: string,
   rng: () => number,
   mode: 'prefer' | 'avoid' | 'any' = 'any',
+  maxNodes = 20000,
 ): number[] | null {
   const grid = new Array<number>(CELL_COUNT).fill(0);
   const peers = runPeers(layout);
@@ -357,7 +361,9 @@ export function fillLayout(
     return digits;
   };
 
+  let budget = maxNodes;
   const search = (): boolean => {
+    if (--budget < 0) return false;
     let bestCell = -1;
     let bestMask = 0;
     let bestCount = 10;
@@ -488,13 +494,15 @@ export class KakuroGenerator {
     const maxAttempts = options.maxAttempts ?? 240;
     const maxRepairs = options.maxRepairs ?? 16;
 
-    // Easy puzzles prefer layouts that are made of short runs.
+    // Indices into KAKURO_TEMPLATES. The denser layouts (6..9) come first because they make fuller
+    // boards; the sparse classics (0..5) stay as fallbacks. Index 7 (Meadow) is only listed for the
+    // easy levels: the avoid-partitions fill rarely succeeds on it.
     const order =
       level <= 2
-        ? [0, 1, 0, 2, 1, 3, 0, 4, 2, 5]
+        ? [6, 7, 6, 0, 7, 1, 6, 2, 7, 3]
         : level === 3
-          ? [2, 1, 3, 4, 0, 5, 2, 4]
-          : [5, 4, 3, 2, 5, 4, 1, 0];
+          ? [8, 9, 6, 8, 9, 2, 6, 3]
+          : [9, 8, 6, 9, 8, 6, 5, 4, 3];
 
     // Level 1 and 2 puzzles fall to magic blocks, harder ones need the advanced techniques, so the
     // fill avoids unique sum partitions from level 3 upwards.

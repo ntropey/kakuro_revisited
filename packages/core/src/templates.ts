@@ -51,7 +51,23 @@ export const LAYOUT_RIGHT =
 export const LAYOUT_LONG =
   '#########' + '#..######' + '#..######' + '#...###..' + '#...###..' + '###..#...' + '###..#...' + '####...##' + '####...##';
 
-/** All built-in layouts, ordered from easiest to hardest. */
+/** Mixed short runs across the whole board; a gentle step up from the staircases. */
+export const LAYOUT_MOSAIC =
+  '#########' + '#..##..##' + '#..#...##' + '##...#..#' + '###..##..' + '#..#..#..' + '#..#...##' + '##...#...' + '##..###..';
+
+/** Dense board of short runs, mostly easy. */
+export const LAYOUT_MEADOW =
+  '#########' + '#..####..' + '#...#....' + '###....##' + '#....##..' + '#..#..#..' + '###...#..' + '#...#...#' + '#..###..#';
+
+/** Interlocking runs of two to six cells; an even spread of difficulty. */
+export const LAYOUT_TRAIL =
+  '#########' + '#..##..##' + '#..##...#' + '##...##..' + '###...#..' + '##..#...#' + '#..##..##' + '#...##...' + '##..###..';
+
+/** Interlocking runs of up to five cells; medium to hard. */
+export const LAYOUT_LATTICE =
+  '#########' + '###..#..#' + '##...#..#' + '#..####..' + '#..##....' + '##.....##' + '###..#..#' + '#....##..' + '#..####..';
+
+/** All built-in layouts: the six sparse classics first, then four denser mixed layouts. */
 export const KAKURO_TEMPLATES: readonly string[] = [
   LAYOUT_STAIRCASE,
   LAYOUT_DIAGONAL,
@@ -59,6 +75,10 @@ export const KAKURO_TEMPLATES: readonly string[] = [
   LAYOUT_WIDE,
   LAYOUT_RIGHT,
   LAYOUT_LONG,
+  LAYOUT_MOSAIC,
+  LAYOUT_MEADOW,
+  LAYOUT_TRAIL,
+  LAYOUT_LATTICE,
 ];
 
 /** Human readable names for the built-in layouts. */
@@ -69,6 +89,10 @@ export const TEMPLATE_NAMES: readonly string[] = [
   'Wide',
   'Right Column',
   'Long Staircase',
+  'Mosaic',
+  'Meadow',
+  'Trail',
+  'Lattice',
 ];
 
 /**
