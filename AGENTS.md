@@ -56,6 +56,9 @@ Before finishing a change, run `pnpm typecheck` and `pnpm test`, and the affecte
 - **App/worker split.** The app talks to the solver through `packages/app/src/solverClient.ts` →
   `worker.ts` → `solverApi.ts`. Keep `solverApi.ts` pure and testable; keep the message shapes in
   `protocol.ts` in sync across all three.
+- **App UI split.** `App.tsx` is a thin shell: game session state lives in `hooks/useGameSession.ts`,
+  panel state in `hooks/usePanel.ts`, solver tools in `hooks/useSolverTools.ts`, and rendering of the
+  open panel in `components/PanelHost.tsx`. Keep game logic in `game.ts` and storage in `store.ts`.
 - **Game logic is pure.** `packages/app/src/game.ts` is pure and unit-tested; keep UI concerns out of
   it.
 - **The website is generated.** `packages/website/src/build.mjs` writes every page from string
