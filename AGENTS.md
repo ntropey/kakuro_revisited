@@ -39,7 +39,7 @@ pnpm --filter @kakuro/app test
 pnpm --filter @kakuro/app dev                     # dev server
 pnpm --filter @kakuro/app build                   # tsc + vite build -> packages/app/dist
 pnpm --filter @kakuro/website build               # site, including the app -> packages/website/dist
-pnpm --filter @kakuro/website test                # builds the site, then asserts on the output
+pnpm --filter @kakuro/website test                # builds the app and the site, then asserts on the output
 ```
 
 `SITE_URL=https://kakurorevisited.com/` is set in CI for the website build (it writes `sitemap.xml`

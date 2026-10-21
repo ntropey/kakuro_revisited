@@ -4,8 +4,17 @@
  * Pure: no React, and localStorage is supplied by the caller, so these helpers can be tested with a stub.
  */
 import { CELL_COUNT } from '@kakuro/core';
-import type { GameState } from './game';
-import { GAME_KEY, HISTORY_KEY, SETTINGS_KEY, STATS_KEY, DEFAULT_SETTINGS, type Settings } from './ui';
+import { createGame, type GameState } from './game';
+import type { PathEntry } from './protocol';
+import {
+  DEFAULT_SETTINGS,
+  GAME_KEY,
+  HISTORY_KEY,
+  SEEN_KEY,
+  SETTINGS_KEY,
+  STATS_KEY,
+  type Settings,
+} from './ui';
 
 /** The bits of localStorage the app uses; passed in so the helpers can be tested with a stub. */
 export interface Store {
@@ -55,7 +64,11 @@ export interface SavedGame {
   elapsedMs: number;
 }
 
-export function saveGame(store: Store, game: GameState): void {
+/**
+ * Store the game. `elapsedMs` defaults to the game's own clock; the app passes the live clock so a
+ * reload does not lose the seconds since the last move.
+ */
+export function saveGame(store: Store, game: GameState, elapsedMs: number = game.elapsedMs): void {
   const saved: SavedGame = {
     puzzle: game.puzzle,
     values: game.values.slice(),
@@ -67,16 +80,47 @@ export function saveGame(store: Store, game: GameState): void {
     daily: game.daily,
     layout: game.layout,
     hintsUsed: game.hintsUsed,
-    elapsedMs: game.elapsedMs,
+    elapsedMs,
   };
   saveJson(store, GAME_KEY, saved);
 }
 
+/** The stored game, or null when there is none or it does not fit this version of the board. */
 export function loadGame(store: Store): SavedGame | null {
   const saved = loadJson<SavedGame | null>(store, GAME_KEY, null);
-  if (!saved || !saved.puzzle || !Array.isArray(saved.values)) return null;
-  if (saved.values.length !== CELL_COUNT) return null;
+  if (!saved || !saved.puzzle) return null;
+  if (!Array.isArray(saved.values) || saved.values.length !== CELL_COUNT) return null;
+  if (!Array.isArray(saved.solution) || saved.solution.length !== CELL_COUNT) return null;
   return saved;
+}
+
+/** Rebuild a playable game from a stored one; fields an older version did not store get defaults. */
+export function restoreGame(saved: SavedGame): GameState {
+  const game = createGame({
+    puzzle: saved.puzzle,
+    solution: saved.solution,
+    level: saved.level ?? 1,
+    score: saved.score ?? 0,
+    path: (saved.path ?? []) as PathEntry[],
+    daily: saved.daily,
+    layout: saved.layout,
+  });
+  game.values = saved.values.slice();
+  if (Array.isArray(saved.notes) && saved.notes.length === CELL_COUNT) game.notes = saved.notes.slice();
+  game.hintsUsed = saved.hintsUsed ?? 0;
+  game.elapsedMs = saved.elapsedMs ?? 0;
+  return game;
+}
+
+/** The bank puzzles already shown, as indices per level. */
+export type SeenBank = Record<string, number[]>;
+
+export function loadSeen(store: Store): SeenBank {
+  return loadJson<SeenBank>(store, SEEN_KEY, {});
+}
+
+export function saveSeen(store: Store, seen: SeenBank): void {
+  saveJson(store, SEEN_KEY, seen);
 }
 
 export function clearGame(store: Store): void {

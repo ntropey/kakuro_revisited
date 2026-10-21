@@ -12,6 +12,7 @@ import { CombinationHelper } from '../src/components/CombinationHelper';
 import { DailyShare } from '../src/components/DailyShare';
 import { DigitPad } from '../src/components/DigitPad';
 import { HintsPanel } from '../src/components/HintsPanel';
+import { IdlePanel } from '../src/components/IdlePanel';
 import { PathPanel } from '../src/components/PathPanel';
 import { ProofPanel } from '../src/components/ProofPanel';
 import { SettingsSheet } from '../src/components/SettingsSheet';
@@ -132,6 +133,9 @@ describe('Component rendering', () => {
         <SolvedDialog levelName="Easy" elapsedMs={65_000} hintsUsed={0} onShare={noop} onNew={noop} onClose={noop} />,
       ),
       renderToStaticMarkup(<CombinationHelper />),
+      renderToStaticMarkup(
+        <IdlePanel filled={12} total={40} onCoach={noop} onHints={noop} onCombinations={noop} />,
+      ),
       renderToStaticMarkup(
         <ProofPanel
           cell={10}

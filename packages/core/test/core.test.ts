@@ -6,13 +6,16 @@ import {
   KakuroGenerator,
   KakuroSolver,
   KakuroStepFinder,
+  TEMPLATE_NAMES,
   analyzeRunCombinations,
   applyStep,
   buildCellsFromSolutionGrid,
   computeCellSetSumBounds,
+  createRng,
   digitsToMask,
   encodeKakuro,
   feasibleDigits,
+  fillLayout,
   formatKakuro,
   getPartitions,
   hasPerfectMatching,
@@ -125,6 +128,19 @@ describe('Layouts', () => {
       expect(stats.whiteCells).toBeGreaterThan(0);
       expect(stats.longestRun).toBeGreaterThanOrEqual(2);
     }
+  });
+
+  it('names every layout and offers several full boards', () => {
+    expect(TEMPLATE_NAMES).toHaveLength(KAKURO_TEMPLATES.length);
+    expect(new Set(TEMPLATE_NAMES).size).toBe(TEMPLATE_NAMES.length);
+    const dense = KAKURO_TEMPLATES.filter((layout) => layoutStats(layout).whiteCells >= 36);
+    expect(dense.length).toBeGreaterThanOrEqual(4);
+  });
+
+  it('gives up a fill that exceeds its node budget instead of searching on', () => {
+    const layout = KAKURO_TEMPLATES[KAKURO_TEMPLATES.length - 1];
+    expect(fillLayout(layout, createRng(1), 'avoid', 1)).toBeNull();
+    expect(fillLayout(layout, createRng(1), 'prefer')).not.toBeNull();
   });
 
   it('rejects a broken layout', () => {
@@ -260,6 +276,17 @@ describe('Generator', () => {
       expect(report.solved).toBe(true);
       expect(report.level).toBeGreaterThanOrEqual(1);
       expect(report.level).toBeLessThanOrEqual(5);
+    }
+  });
+
+  it('generates full boards, not just the sparse staircases', () => {
+    const gen = new KakuroGenerator();
+    for (const level of [1, 3, 4]) {
+      for (const seed of [7919, 15838, 23757]) {
+        const g = gen.generate(level, seed);
+        const whites = g.solution.filter((d) => d > 0).length;
+        expect(whites, `level ${level} seed ${seed} (${g.layout})`).toBeGreaterThanOrEqual(36);
+      }
     }
   });
 

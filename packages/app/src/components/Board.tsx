@@ -4,6 +4,7 @@
  */
 import { memo } from 'react';
 import { CELL_COUNT, GRID_SIZE, type KakuroCellDef, type StepMarks } from '@kakuro/core';
+import { runPeers } from '../game';
 
 export interface BoardProps {
   cells: readonly KakuroCellDef[];
@@ -68,19 +69,9 @@ function BoardInner({
   }
 
   // The peers of the selected cell: the other cells of its Across and Down runs.
-  const peers = new Set<number>();
-  if (highlightPeers && selected >= 0 && cells[selected]?.kind === 'white') {
-    const row = Math.floor(selected / GRID_SIZE);
-    const col = selected % GRID_SIZE;
-    for (let c = 0; c < GRID_SIZE; c++) {
-      const idx = row * GRID_SIZE + c;
-      if (idx !== selected && cells[idx]?.kind === 'white') peers.add(idx);
-    }
-    for (let r = 0; r < GRID_SIZE; r++) {
-      const idx = r * GRID_SIZE + col;
-      if (idx !== selected && cells[idx]?.kind === 'white') peers.add(idx);
-    }
-  }
+  const peers = new Set<number>(
+    highlightPeers && selected >= 0 && cells[selected]?.kind === 'white' ? runPeers(cells, selected) : [],
+  );
   const sameDigit = new Set<number>();
   if (highlightSameDigit && selected >= 0 && values[selected] > 0) {
     for (let i = 0; i < CELL_COUNT; i++) if (i !== selected && values[i] === values[selected]) sameDigit.add(i);
