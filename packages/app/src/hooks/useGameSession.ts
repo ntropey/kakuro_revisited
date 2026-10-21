@@ -31,9 +31,18 @@ export interface GameSessionOptions {
   setStatus: (status: string) => void;
   /** Called when a new puzzle replaces the current one, so tools can drop what they showed. */
   onPuzzleStart: () => void;
+  /** Called once a move completes the puzzle, with the finished game and the time it took. */
+  onSolved: (game: GameState, elapsedMs: number) => void;
 }
 
-export function useGameSession({ settings, getClient, setBusy, setStatus, onPuzzleStart }: GameSessionOptions) {
+export function useGameSession({
+  settings,
+  getClient,
+  setBusy,
+  setStatus,
+  onPuzzleStart,
+  onSolved,
+}: GameSessionOptions) {
   const [game, setGame] = useState<GameState | null>(() => {
     const saved = loadGame(window.localStorage);
     return saved ? restoreGame(saved) : null;
@@ -49,6 +58,8 @@ export function useGameSession({ settings, getClient, setBusy, setStatus, onPuzz
   );
   const onPuzzleStartRef = useRef(onPuzzleStart);
   onPuzzleStartRef.current = onPuzzleStart;
+  const onSolvedRef = useRef(onSolved);
+  onSolvedRef.current = onSolved;
 
   // The timer.
   useEffect(() => {
@@ -171,6 +182,7 @@ export function useGameSession({ settings, getClient, setBusy, setStatus, onPuzz
     (g: GameState) => {
       if (isSolved(g)) {
         setSolved(true);
+        onSolvedRef.current(g, elapsedMs);
         update((cur) => {
           cur.elapsedMs = elapsedMs;
         });

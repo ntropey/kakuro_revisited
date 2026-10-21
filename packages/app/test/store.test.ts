@@ -2,7 +2,20 @@ import { describe, expect, it } from 'vitest';
 import { CELL_COUNT, parseKakuro } from '@kakuro/core';
 import { createGame, placeDigit, selectCell } from '../src/game';
 import type { PuzzleInfo } from '../src/protocol';
-import { loadGame, loadSeen, restoreGame, saveGame, saveSeen, type Store } from '../src/store';
+import {
+  activeStreak,
+  historyId,
+  loadGame,
+  loadHistory,
+  loadSeen,
+  loadStats,
+  recordSolve,
+  restoreGame,
+  saveGame,
+  saveSeen,
+  type SolveInput,
+  type Store,
+} from '../src/store';
 
 const SOLUTION_GRID = [
   '#########',
@@ -116,5 +129,93 @@ describe('Seen bank puzzles', () => {
     expect(loadSeen(store)).toEqual({});
     saveSeen(store, { '1': [0, 3], '2': [7] });
     expect(loadSeen(store)).toEqual({ '1': [0, 3], '2': [7] });
+  });
+});
+
+function solve(overrides: Partial<SolveInput> = {}): SolveInput {
+  return {
+    puzzle: 'puzzle-a',
+    level: 2,
+    score: 500,
+    seconds: 120,
+    hintsUsed: 0,
+    today: '2026-10-21',
+    at: 1,
+    ...overrides,
+  };
+}
+
+describe('Recording a solve', () => {
+  it('counts a puzzle in the history and the statistics', () => {
+    const store = memoryStore();
+    const rec = recordSolve(store, solve({ hintsUsed: 2 }));
+    expect(rec.recorded).toBe(true);
+    expect(rec.newBest).toBe(false);
+    expect(rec.stats.solved).toBe(1);
+    expect(rec.stats.bestSeconds).toBe(120);
+    expect(rec.stats.byLevel[2]).toBe(1);
+    const [entry] = loadHistory(store);
+    expect(entry).toMatchObject({ id: historyId('puzzle-a'), level: 2, seconds: 120, solved: true, hintsUsed: 2 });
+  });
+
+  it('counts a puzzle once, however often it is finished', () => {
+    const store = memoryStore();
+    recordSolve(store, solve());
+    const again = recordSolve(store, solve({ seconds: 5 }));
+    expect(again.recorded).toBe(false);
+    expect(again.newBest).toBe(false);
+    expect(loadStats(store).solved).toBe(1);
+    expect(loadStats(store).bestSeconds).toBe(120);
+    expect(loadHistory(store)).toHaveLength(1);
+  });
+
+  it('reports a new best time only after a first one exists', () => {
+    const store = memoryStore();
+    expect(recordSolve(store, solve({ puzzle: 'a', seconds: 100 })).newBest).toBe(false);
+    expect(recordSolve(store, solve({ puzzle: 'b', seconds: 90 })).newBest).toBe(true);
+    expect(recordSolve(store, solve({ puzzle: 'c', seconds: 95 })).newBest).toBe(false);
+    expect(loadStats(store).bestSeconds).toBe(90);
+  });
+
+  it('builds a Daily streak over consecutive days and restarts it after a gap', () => {
+    const store = memoryStore();
+    const daily = (date: string) => recordSolve(store, solve({ puzzle: `d-${date}`, daily: date, today: date }));
+    expect(daily('2026-10-19').streak).toBe(1);
+    expect(daily('2026-10-20').streak).toBe(2);
+    expect(daily('2026-10-21').streak).toBe(3);
+    expect(daily('2026-10-23').streak).toBe(1);
+  });
+
+  it('lets only the first solve of a Daily date move the streak', () => {
+    const store = memoryStore();
+    recordSolve(store, solve({ puzzle: 'd1', daily: '2026-10-20', today: '2026-10-20' }));
+    recordSolve(store, solve({ puzzle: 'd2', daily: '2026-10-21', today: '2026-10-21' }));
+    // another puzzle for the same date, for instance after changing the Daily level
+    const extra = recordSolve(store, solve({ puzzle: 'd2-hard', daily: '2026-10-21', today: '2026-10-21' }));
+    expect(extra.recorded).toBe(true);
+    expect(extra.streak).toBe(2);
+    expect(loadStats(store).solved).toBe(3);
+  });
+
+  it('credits a Daily finished after midnight to its own date', () => {
+    const store = memoryStore();
+    recordSolve(store, solve({ puzzle: 'd1', daily: '2026-10-20', today: '2026-10-20' }));
+    const late = recordSolve(store, solve({ puzzle: 'd2', daily: '2026-10-21', today: '2026-10-22' }));
+    expect(late.stats.dailyStreak).toBe(2);
+  });
+
+  it('does not let practice puzzles touch the streak', () => {
+    const store = memoryStore();
+    recordSolve(store, solve({ puzzle: 'p1' }));
+    expect(loadStats(store).dailyStreak).toBe(0);
+    expect(activeStreak(store, '2026-10-21')).toBe(0);
+  });
+
+  it('lets the streak lapse in what it shows once a day is missed', () => {
+    const store = memoryStore();
+    recordSolve(store, solve({ puzzle: 'd1', daily: '2026-10-20', today: '2026-10-20' }));
+    expect(activeStreak(store, '2026-10-20')).toBe(1);
+    expect(activeStreak(store, '2026-10-21')).toBe(1);
+    expect(activeStreak(store, '2026-10-22')).toBe(0);
   });
 });

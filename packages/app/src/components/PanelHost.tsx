@@ -5,6 +5,7 @@
 import type { KakuroCellDef } from '@kakuro/core';
 import { allowedDigits, cellLabel, whiteProgress, type GameState } from '../game';
 import type { PanelKind } from '../hooks/usePanel';
+import type { Records } from '../hooks/useRecords';
 import type { SolverTools } from '../hooks/useSolverTools';
 import { levelName, type Settings } from '../ui';
 import { CoachPanel } from './CoachPanel';
@@ -15,6 +16,7 @@ import { IdlePanel } from './IdlePanel';
 import { PathPanel } from './PathPanel';
 import { ProofPanel } from './ProofPanel';
 import { SettingsSheet } from './SettingsSheet';
+import { StatsPanel } from './StatsPanel';
 
 export interface PanelHostProps {
   panel: PanelKind;
@@ -23,6 +25,7 @@ export interface PanelHostProps {
   elapsedMs: number;
   settings: Settings;
   tools: SolverTools;
+  records: Records;
   onSettings: (next: Settings) => void;
   onOpen: (kind: PanelKind) => void;
   onClose: () => void;
@@ -37,6 +40,7 @@ export function PanelHost({
   elapsedMs,
   settings,
   tools,
+  records,
   onSettings,
   onOpen,
   onClose,
@@ -88,6 +92,8 @@ export function PanelHost({
           onClose={onClose}
         />
       );
+    case 'stats':
+      return <StatsPanel stats={records.stats} streak={records.streak} history={records.history} onClose={onClose} />;
     case 'settings':
       return <SettingsSheet settings={settings} onChange={onSettings} onClose={onClose} />;
     case 'prove':

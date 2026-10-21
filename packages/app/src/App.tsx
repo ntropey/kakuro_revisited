@@ -14,6 +14,7 @@ import { useGameSession } from './hooks/useGameSession';
 import { useKeyboardPlay } from './hooks/useKeyboardPlay';
 import { useMediaQuery } from './hooks/useMediaQuery';
 import { usePanel } from './hooks/usePanel';
+import { useRecords } from './hooks/useRecords';
 import { useSolverClient } from './hooks/useSolverClient';
 import { useSolverTools } from './hooks/useSolverTools';
 import { loadSettings, saveSettings } from './store';
@@ -30,12 +31,14 @@ export function App() {
   // The session starts puzzles and the tools hold what a puzzle showed, so the session reaches the
   // tools through a ref that is filled in below.
   const resetTools = useRef(() => {});
+  const records = useRecords();
   const session = useGameSession({
     settings,
     getClient,
     setBusy,
     setStatus,
     onPuzzleStart: () => resetTools.current(),
+    onSolved: records.recordSolved,
   });
   const { game, cells, elapsedMs } = session;
   const tools = useSolverTools({ getClient, game, settings, openPanel, setBusy, setStatus });
@@ -85,6 +88,7 @@ export function App() {
       elapsedMs={elapsedMs}
       settings={settings}
       tools={tools}
+      records={records}
       onSettings={onSettings}
       onOpen={openPanel}
       onClose={closePanel}
@@ -105,6 +109,7 @@ export function App() {
         onCoach={() => void tools.openCoach()}
         onHints={() => void tools.openHints()}
         onCombinations={() => openPanel('combinations')}
+        onStats={() => openPanel('stats')}
         onShare={() => openPanel('share')}
         onSettings={() => openPanel('settings')}
       />
@@ -174,6 +179,8 @@ export function App() {
           elapsedMs={elapsedMs}
           hintsUsed={game?.hintsUsed ?? 0}
           daily={game?.daily}
+          newBest={records.lastSolve?.newBest}
+          streak={records.lastSolve?.streak}
           onShare={() => openPanel('share')}
           onNew={() => void session.loadPuzzle('new')}
           onClose={() => session.setSolved(false)}
