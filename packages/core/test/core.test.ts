@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   ALL_DIGITS_MASK,
+  KAKURO_TEMPLATES,
   KakuroBoard,
   KakuroGenerator,
   KakuroSolver,
@@ -11,12 +12,17 @@ import {
   computeCellSetSumBounds,
   digitsToMask,
   encodeKakuro,
+  feasibleDigits,
   formatKakuro,
   getPartitions,
+  hasPerfectMatching,
   isMagicBlock,
+  layoutStats,
   maskToDigits,
   parseKakuro,
   pickFromBank,
+  sumBounds,
+  validateLayout,
 } from '../src/index';
 
 describe('Sum Partitions & Bitmasks', () => {
@@ -54,6 +60,7 @@ describe('Sum Partitions & Bitmasks', () => {
       [1, 3, 4],
     ]);
     expect(maskToDigits(res.mandatoryMask)).toEqual([1]);
+    expect(maskToDigits(res.unionMask)).toEqual([1, 2, 3, 4, 5]);
   });
 
   it('computes cell set sum bounds without duplicate digits', () => {
@@ -65,17 +72,78 @@ describe('Sum Partitions & Bitmasks', () => {
   });
 });
 
+describe('Matching & Sum Bounds', () => {
+  it('finds a perfect matching between digits and cells', () => {
+    expect(hasPerfectMatching(digitsToMask([1, 2]), [digitsToMask([1, 2]), digitsToMask([1, 2])])).toBe(
+      true,
+    );
+    // Digit 2 has nowhere to go, so no matching exists.
+    expect(hasPerfectMatching(digitsToMask([1, 2]), [digitsToMask([1]), digitsToMask([1])])).toBe(
+      false,
+    );
+  });
+
+  it('reports the digits a cell may hold inside a partition', () => {
+    // Digits {1,2} can only go into the cell that accepts 1.
+    const feasible = feasibleDigits(digitsToMask([1, 2]), [digitsToMask([1]), digitsToMask([1, 2])]);
+    expect(maskToDigits(feasible[0])).toEqual([1]);
+    expect(maskToDigits(feasible[1])).toEqual([2]);
+  });
+
+  it('forces a cell when the other cell has no digit left', () => {
+    // Cell A only accepts 2 out of {2,3}, so cell B has to take 3.
+    const feasible = feasibleDigits(digitsToMask([2, 3]), [digitsToMask([1, 2]), digitsToMask([2, 3])]);
+    expect(maskToDigits(feasible[0])).toEqual([2]);
+    expect(maskToDigits(feasible[1])).toEqual([3]);
+  });
+
+  it('keeps every digit when both cells accept both digits', () => {
+    const feasible = feasibleDigits(digitsToMask([1, 2]), [digitsToMask([1, 2]), digitsToMask([1, 2])]);
+    expect(maskToDigits(feasible[0])).toEqual([1, 2]);
+    expect(maskToDigits(feasible[1])).toEqual([1, 2]);
+  });
+
+  it('bounds the sum of a set of cells with distinct digits', () => {
+    // Both cells accept {1,9} but the digits must differ, so the sum is always 10.
+    expect(sumBounds([digitsToMask([1, 9]), digitsToMask([1, 9])])).toEqual({
+      minSum: 10,
+      maxSum: 10,
+    });
+    // Three cells over {1..9}: the smallest sum is 1+2+3, the largest 7+8+9.
+    expect(sumBounds([ALL_DIGITS_MASK, ALL_DIGITS_MASK, ALL_DIGITS_MASK])).toEqual({
+      minSum: 6,
+      maxSum: 24,
+    });
+  });
+});
+
+describe('Layouts', () => {
+  it('accepts every built-in layout', () => {
+    for (const layout of KAKURO_TEMPLATES) {
+      expect(validateLayout(layout).ok).toBe(true);
+      const stats = layoutStats(layout);
+      expect(stats.whiteCells).toBeGreaterThan(0);
+      expect(stats.longestRun).toBeGreaterThanOrEqual(2);
+    }
+  });
+
+  it('rejects a broken layout', () => {
+    expect(validateLayout('#'.repeat(80)).ok).toBe(false);
+    expect(validateLayout(`#${'.'.repeat(80)}`).ok).toBe(false);
+  });
+});
+
 describe('Board Parsing, Encoding & Human Step Solver', () => {
   const sampleTemplate = [
     '#########',
-    '#12#89###',
-    '#34#761##',
-    '##124#89#',
-    '###89#76#',
-    '#98#12###',
-    '#76#349##',
-    '##987#12#',
-    '####123##',
+    '#91######',
+    '#83######',
+    '##98###19',
+    '##21###27',
+    '###98#19#',
+    '###29#27#',
+    '####379##',
+    '####138##',
   ].join('');
 
   it('round-trips board encoding and parsing in canonical and formatted modes', () => {
@@ -102,6 +170,20 @@ describe('Board Parsing, Encoding & Human Step Solver', () => {
     expect(report.steps.length).toBeGreaterThan(0);
     expect(report.level).toBeGreaterThanOrEqual(1);
     expect(report.score).toBeGreaterThan(0);
+  });
+
+  it('never places a wrong digit', () => {
+    const { board } = parseKakuro(sampleTemplate);
+    const solver = new KakuroSolver();
+    const report = solver.solveLogical(board);
+    // The template is the solution grid, so the digits of the grid are the truth.
+    const truth = [...sampleTemplate].map((ch) => (ch === '#' ? 0 : Number(ch)));
+    expect(report.solved).toBe(true);
+    for (const step of report.steps) {
+      for (const place of step.marks.place) {
+        expect(truth[place.cell]).toBe(place.digit);
+      }
+    }
   });
 
   it('finds FULL_RUN, MAGIC_BLOCK, CROSS_INTERSECTION, SUM_BOUNDS, NAKED_PAIR, and LOCKED_SUM_RESIDUAL steps', () => {
@@ -146,7 +228,9 @@ describe('Board Parsing, Encoding & Human Step Solver', () => {
     expect(residuals.length).toBeGreaterThan(0);
     expect(residuals[0].marks.place).toEqual([{ cell: 1 * 9 + 3, digit: 4 }]);
   });
+});
 
+describe('Generator', () => {
   it('generates deterministic Daily Puzzles and bank puzzles with unique solutions', () => {
     const gen = new KakuroGenerator();
     const solver = new KakuroSolver();
@@ -162,5 +246,27 @@ describe('Board Parsing, Encoding & Human Step Solver', () => {
 
     const bank1 = pickFromBank(1, []);
     expect(bank1.puzzle.length).toBeGreaterThan(80);
+  });
+
+  it('generates puzzles with a single solution and a human solution path', () => {
+    const gen = new KakuroGenerator();
+    const solver = new KakuroSolver();
+    for (const level of [1, 2, 3, 4, 5]) {
+      const g = gen.generate(level, 4242 + level);
+      const { board } = parseKakuro(g.puzzle);
+      const exact = solver.solveExact(board, 3);
+      expect(exact.count).toBe(1);
+      const report = solver.solveLogical(board);
+      expect(report.solved).toBe(true);
+      expect(report.level).toBeGreaterThanOrEqual(1);
+      expect(report.level).toBeLessThanOrEqual(5);
+    }
+  });
+
+  it('is deterministic for the same seed', () => {
+    const a = new KakuroGenerator().generate(3, 90210);
+    const b = new KakuroGenerator().generate(3, 90210);
+    expect(a.puzzle).toBe(b.puzzle);
+    expect(a.level).toBe(b.level);
   });
 });

@@ -12,8 +12,7 @@ import {
   emptyMarks,
 } from './board';
 import {
-  analyzeRunCombinations,
-  computeCellSetSumBounds,
+  ALL_DIGITS_MASK,
   digitBit,
   formatPartition,
   getPartitions,
@@ -22,6 +21,7 @@ import {
   maskToDigits,
   popcount,
 } from './partitions';
+import { analyzeRunCombinations, computeCellSetSumBounds } from './runs';
 
 export type SolutionType =
   | 'FULL_RUN'
@@ -42,7 +42,7 @@ export type SolutionType =
 export interface StepConfig {
   readonly type: SolutionType;
   readonly name: string;
-  readonly level: number; // 1 = Easy, 2 = Medium, 3 = Hard, 4 = Unfair, 5 = Extreme
+  readonly level: number; // 1 = Trivial, 2 = Easy, 3 = Medium, 4 = Hard, 5 = Extreme
   readonly score: number;
   readonly slug: string;
 }
@@ -113,6 +113,27 @@ function makeStep(
 }
 
 export class KakuroStepFinder {
+  /** Cache of run analyses, keyed by the exact state of the run. */
+  private readonly analysisCache = new Map<string, ReturnType<typeof analyzeRunCombinations>>();
+
+  /** Analyse a run, reusing a cached result when the run state did not change. */
+  private runAnalysis(board: KakuroBoard, run: KakuroRun) {
+    const st = board.runState(run);
+    const key = `${run.id}|${st.residualSum}|${st.placedMask}|${st.emptyCells
+      .map((c) => board.cands[c])
+      .join('.')}`;
+    const cached = this.analysisCache.get(key);
+    if (cached) return cached;
+    const analysis = analyzeRunCombinations(
+      st.residualSum,
+      st.emptyCells.map((c) => board.cands[c]),
+      st.placedMask,
+    );
+    if (this.analysisCache.size > 20000) this.analysisCache.clear();
+    this.analysisCache.set(key, analysis);
+    return analysis;
+  }
+
   /**
    * 1. FULL_RUN: Any horizontal or vertical run with exactly 1 empty cell left.
    */
@@ -255,9 +276,10 @@ export class KakuroStepFinder {
   }
 
   /**
-   * 4. CROSS_INTERSECTION: For an empty cell `c`, intersect the union of valid partitions of its
-   * Across run and Down run. If that intersection leaves a single digit in `c`, place it directly;
-   * otherwise eliminate candidates in `c` that cannot appear in both runs' sum partitions.
+   * 4. CROSS_INTERSECTION: A cell belongs to an Across run and a Down run. Each run can only hold
+   * digits that appear in one of its valid sum partitions, so the cell must take a digit that both
+   * runs allow. This is the classic human cross-run intersection: it uses the digits a run can
+   * hold, not the exact per-cell assignment, which is the stronger Partition Matching technique.
    */
   findAllCrossIntersections(board: KakuroBoard): SolutionStep[] {
     const placementSteps: SolutionStep[] = [];
@@ -271,25 +293,17 @@ export class KakuroStepFinder {
       const stV = board.runState(down);
       if (stH.hasDuplicate || stV.hasDuplicate) continue;
 
-      const partsH = getPartitions(stH.emptyCells.length, stH.residualSum).filter(
-        (p) => (p.mask & stH.placedMask) === 0 && (p.mask & board.cands[cell]) !== 0,
-      );
-      const partsV = getPartitions(stV.emptyCells.length, stV.residualSum).filter(
-        (p) => (p.mask & stV.placedMask) === 0 && (p.mask & board.cands[cell]) !== 0,
-      );
-      if (partsH.length === 0 || partsV.length === 0) continue;
+      const analysisH = this.runAnalysis(board, across);
+      if (analysisH.validPartitions.length === 0) continue;
+      const analysisV = this.runAnalysis(board, down);
+      if (analysisV.validPartitions.length === 0) continue;
 
-      let maskH = 0;
-      for (const p of partsH) maskH |= p.mask;
-      let maskV = 0;
-      for (const p of partsV) maskV |= p.mask;
-
-      const allowed = maskH & maskV & board.cands[cell];
+      const allowed = analysisH.unionMask & analysisV.unionMask & board.cands[cell];
       if (allowed === 0) continue;
 
       const allowedDigits = maskToDigits(allowed);
-      const hDigits = maskToDigits(maskH);
-      const vDigits = maskToDigits(maskV);
+      const hDigits = maskToDigits(analysisH.unionMask);
+      const vDigits = maskToDigits(analysisV.unionMask);
 
       // Direct single placement at the cross-run intersection when >1 candidate was present
       if (allowedDigits.length === 1 && popcount(board.cands[cell]) > 1) {
@@ -368,8 +382,7 @@ export class KakuroStepFinder {
       const st = board.runState(run);
       const k = st.emptyCells.length;
       if (k < 2 || st.hasDuplicate) continue;
-      const cellMasks = st.emptyCells.map((c) => board.cands[c]);
-      const analysis = analyzeRunCombinations(st.residualSum, cellMasks, st.placedMask);
+      const analysis = this.runAnalysis(board, run);
       if (analysis.validPartitions.length === 0 || analysis.mandatoryMask === 0) continue;
 
       const isSinglePartition = analysis.validPartitions.length === 1;
@@ -552,9 +565,7 @@ export class KakuroStepFinder {
       const st = board.runState(run);
       const k = st.emptyCells.length;
       if (k <= size || st.hasDuplicate) continue;
-
-      const cellMasks = st.emptyCells.map((c) => board.cands[c]);
-      const analysis = analyzeRunCombinations(st.residualSum, cellMasks, st.placedMask);
+      const analysis = this.runAnalysis(board, run);
       const mandatoryDigits = maskToDigits(analysis.mandatoryMask);
       if (mandatoryDigits.length < size) continue;
 
@@ -621,8 +632,7 @@ export class KakuroStepFinder {
       const st = board.runState(run);
       const k = st.emptyCells.length;
       if (k < 2 || st.hasDuplicate) continue;
-      const cellMasks = st.emptyCells.map((c) => board.cands[c]);
-      const analysis = analyzeRunCombinations(st.residualSum, cellMasks, st.placedMask);
+      const analysis = this.runAnalysis(board, run);
       if (analysis.validPartitions.length === 0) continue;
 
       const elim: StepMark[] = [];
@@ -852,7 +862,7 @@ export class KakuroStepFinder {
   }
 
   /** Propagate simple forced placements from `cell = digit` to check for an immediate contradiction. */
-  private traceHypothesis(
+  traceHypothesis(
     board: KakuroBoard,
     cell: number,
     digit: number,
@@ -892,8 +902,7 @@ export class KakuroStepFinder {
           };
         }
         if (st.emptyCells.length > 0) {
-          const cellMasks = st.emptyCells.map((c) => work.cands[c]);
-          const analysis = analyzeRunCombinations(st.residualSum, cellMasks, st.placedMask);
+          const analysis = this.runAnalysis(work, run);
           if (analysis.validPartitions.length === 0) {
             return {
               conflict: true,
@@ -905,39 +914,48 @@ export class KakuroStepFinder {
         }
       }
 
-      // Advance one forced single if available
-      const nextFull = this.findAllFullRuns(work)[0];
-      if (nextFull && nextFull.marks.place[0]) {
-        const p = nextFull.marks.place[0];
-        work.setCell(p.cell, p.digit);
-        chain.push({ cell: p.cell, digit: p.digit, strong: true });
-        continue;
-      }
-      const nextNaked = this.findAllNakedSingles(work)[0];
-      if (nextNaked && nextNaked.marks.place[0]) {
-        const p = nextNaked.marks.place[0];
-        work.setCell(p.cell, p.digit);
-        chain.push({ cell: p.cell, digit: p.digit, strong: true });
-        continue;
-      }
-      const nextCross = this.findAllCrossIntersections(work).find((s) => s.marks.place.length > 0);
-      if (nextCross && nextCross.marks.place[0]) {
-        const p = nextCross.marks.place[0];
-        work.setCell(p.cell, p.digit);
-        chain.push({ cell: p.cell, digit: p.digit, strong: true });
-        continue;
-      }
-      const nextHidden = this.findAllRunSingles(work, 'HIDDEN_SINGLE_RUN')[0];
-      if (nextHidden && nextHidden.marks.place[0]) {
-        const p = nextHidden.marks.place[0];
-        work.setCell(p.cell, p.digit);
-        chain.push({ cell: p.cell, digit: p.digit, strong: true });
-        continue;
-      }
-      break;
+      // Advance one forced deduction if available
+      if (!this.advance(work, chain)) break;
     }
 
     return { conflict: false, reason: '', chain, conflictCells: [] };
+  }
+
+  /**
+   * Apply the next cheap forced deduction to `work`.
+   * Placements extend the proof chain; eliminations only narrow the candidate sets.
+   * Returns false when nothing more can be deduced.
+   */
+  private advance(work: KakuroBoard, chain: StepMark[]): boolean {
+    const placementFinders = [
+      () => this.findAllFullRuns(work),
+      () => this.findAllNakedSingles(work),
+      () => this.findAllCrossIntersections(work),
+      () => this.findAllRunSingles(work, 'HIDDEN_SINGLE_RUN'),
+      () => this.findAllRunSingles(work, 'MANDATORY_DIGIT'),
+    ];
+    for (const finder of placementFinders) {
+      const step = finder().find((s) => s.marks.place.length > 0);
+      if (!step) continue;
+      for (const p of step.marks.place) {
+        work.setCell(p.cell, p.digit);
+        chain.push({ cell: p.cell, digit: p.digit, strong: true });
+      }
+      return true;
+    }
+
+    // No placement available: narrow the candidate sets with the cheapest eliminations.
+    const eliminationFinders = [
+      () => this.findAllMagicBlocks(work),
+      () => this.findAllForcedCombinations(work),
+    ];
+    for (const finder of eliminationFinders) {
+      const step = finder()[0];
+      if (!step || step.marks.elim.length === 0) continue;
+      for (const e of step.marks.elim) work.setCandidate(e.cell, e.digit, false);
+      return true;
+    }
+    return false;
   }
 
   /**
