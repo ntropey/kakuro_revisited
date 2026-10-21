@@ -22,10 +22,11 @@ if (root) {
   );
 }
 
-// The service worker makes the app work offline.
+// The service worker makes the app work offline. The path is relative to the page, because the
+// app is served from /play/ on the site and from the root elsewhere.
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').catch(() => {
+    navigator.serviceWorker.register('./sw.js').catch(() => {
       /* the app works without it */
     });
   });
