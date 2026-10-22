@@ -86,10 +86,16 @@ function BoardInner({
         if (def.kind === 'block') {
           const hasAcross = (def.across ?? 0) > 0;
           const hasDown = (def.down ?? 0) > 0;
+          const clueAria: string[] = [];
+          if (hasDown) clueAria.push(`down ${def.down}`);
+          if (hasAcross) clueAria.push(`across ${def.across}`);
           return (
             <div
               key={i}
               className={`cell block${hasAcross && hasDown ? ' both' : ''}${!hasAcross && !hasDown ? ' empty' : ''}`}
+              role="img"
+              aria-label={clueAria.length > 0 ? `Clue: ${clueAria.join(', ')}` : undefined}
+              aria-hidden={clueAria.length === 0 ? true : undefined}
             >
               {hasAcross ? <span className="across">{def.across}</span> : null}
               {hasDown ? <span className="down">{def.down}</span> : null}
@@ -109,14 +115,21 @@ function BoardInner({
         if (place.has(i)) cls.push('place');
         if (chainCells.has(i)) cls.push('chain');
         if (wrong.has(i)) cls.push('wrong');
+        const noteDigits: number[] = [];
+        if (!value && noteMask > 0) {
+          for (let d = 1; d <= 9; d++) {
+            if ((noteMask & (1 << d)) !== 0) noteDigits.push(d);
+          }
+        }
+        const cellLabel = `r${Math.floor(i / GRID_SIZE) + 1}c${(i % GRID_SIZE) + 1}${
+          value ? ` ${value}` : noteDigits.length > 0 ? ` notes ${noteDigits.join(' ')}` : ' empty'
+        }`;
         return (
           <button
             key={i}
             type="button"
             className={cls.join(' ')}
-            aria-label={`r${Math.floor(i / GRID_SIZE) + 1}c${(i % GRID_SIZE) + 1}${
-              value ? ` ${value}` : ''
-            }`}
+            aria-label={cellLabel}
             onClick={() => onSelect(i)}
           >
             {value > 0 ? (
