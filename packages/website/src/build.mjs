@@ -92,6 +92,13 @@ ${body}
       <a href="${root}privacy.html">Privacy</a>
       <a href="${REPO}">Source</a>
     </p>
+    <p class="foot-links" style="font-size:.75rem;margin-top:8px">
+      More tools:
+      <a href="https://hodokurevisited.com/" target="_blank" rel="noopener noreferrer">Hodoku Revisited</a> ·
+      <a href="https://kakurorevisited.com/" target="_blank" rel="noopener noreferrer">Kakuro Revisited</a> ·
+      <a href="https://nonogramrevisited.com/" target="_blank" rel="noopener noreferrer">Nonogram Revisited</a> ·
+      <a href="https://logisimrevisited.com/" target="_blank" rel="noopener noreferrer">Logisim Revisited</a>
+    </p>
     <p class="small">Kakuro puzzles are generated and solved in your browser. This site uses Google AdSense; see the <a href="${root}privacy.html">privacy policy</a> for details and for the cookie choice.</p>
   </div>
 </footer>
