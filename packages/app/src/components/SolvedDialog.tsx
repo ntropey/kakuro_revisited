@@ -2,6 +2,7 @@
  * Kakuro Revisited PWA. GPL-3.0-or-later; see LICENSE.
  * The dialog that appears when the puzzle is solved.
  */
+import { useEffect } from 'react';
 import { formatElapsed } from '../ui';
 
 export interface SolvedDialogProps {
@@ -29,9 +30,15 @@ export function SolvedDialog({
   onNew,
   onClose,
 }: SolvedDialogProps) {
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [onClose]);
+
   return (
     <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal solved" onClick={(e) => e.stopPropagation()} role="dialog" aria-label="Puzzle solved">
+      <div className="modal solved" onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-label="Puzzle solved">
         <h2>Solved</h2>
         <p className="solved-time">{formatElapsed(elapsedMs)}</p>
         <p className="solved-meta">
@@ -45,7 +52,7 @@ export function SolvedDialog({
           <button type="button" onClick={onShare}>
             Share
           </button>
-          <button type="button" className="primary" onClick={onNew}>
+          <button type="button" className="primary" onClick={onNew} autoFocus>
             New puzzle
           </button>
         </div>
