@@ -11,14 +11,42 @@
     <meta property="og:title" content="Kakuro Revisited: Kakuro Solver &amp; AI Coach" />
     <meta property="og:description" content="Play the daily Kakuro puzzle, get four-stage Socratic nudges from the AI Coach, or prove why any candidate fails." />
     <meta property="og:image" content="https://kakurorevisited.com/icon-512.png" />
+    <meta property="og:image:width" content="512" />
+    <meta property="og:image:height" content="512" />
+    <meta property="og:url" content="https://kakurorevisited.com/play/" />
     <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Kakuro Solver &amp; Trainer — Kakuro Revisited" />
+    <meta name="twitter:description" content="Free Kakuro (Cross Sums) solver with step-by-step coaching, contradiction proofs, a sum-combination helper, and daily puzzles." />
+    <meta name="twitter:image" content="https://kakurorevisited.com/icon-512.png" />
+    <link rel="canonical" href="https://kakurorevisited.com/play/" />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="apple-touch-icon.png" />
     <link rel="manifest" href="manifest.webmanifest" />
-    <title>Kakuro Revisited</title>
+    <title>Kakuro Solver &amp; Trainer — Kakuro Revisited</title>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Kakuro Revisited",
+        "url": "https://kakurorevisited.com/play/",
+        "applicationCategory": "GameApplication",
+        "operatingSystem": "Any",
+        "browserRequirements": "Requires JavaScript",
+        "isAccessibleForFree": true,
+        "description": "Free browser Kakuro (Cross Sums) solver and trainer with a four-stage AI Coach, contradiction prover, and sum-combination helper.",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
+    <noscript>
+      <main style="max-width:44rem;margin:10vh auto;padding:0 1.5rem;font-family:system-ui,sans-serif;line-height:1.6">
+        <h1>Kakuro Solver, Trainer &amp; AI Coach</h1>
+        <p>Kakuro Revisited is a free browser Kakuro (Cross Sums) solver with step-by-step coaching, contradiction proofs, a live sum-combination helper, and daily puzzles. It runs locally and works offline.</p>
+        <p><a href="../">Read the technique guides</a> or <a href="../play/?daily=1">open the daily puzzle</a>.</p>
+      </main>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

@@ -78,12 +78,22 @@ test('every page carries the consent loader and the AdSense gate', () => {
 
 test('the sitemap and robots file list the pages', () => {
   const sitemap = readFileSync(join(dist, 'sitemap.xml'), 'utf8');
-  assert.ok(sitemap.includes('<loc>https://example.org/index.html</loc>'));
+  assert.ok(sitemap.includes('<loc>https://example.org/</loc>'));
+  assert.ok(sitemap.includes('<loc>https://example.org/techniques/</loc>'));
   assert.ok(sitemap.includes('<loc>https://example.org/techniques/magic-blocks.html</loc>'));
+  assert.ok(!sitemap.includes('/index.html'), 'no duplicate /index.html URLs');
   assert.ok(!sitemap.includes('404.html'), '404 must not be indexed');
   const robots = readFileSync(join(dist, 'robots.txt'), 'utf8');
   assert.match(robots, /Sitemap: https:\/\/example\.org\/sitemap\.xml/);
   assert.ok(existsSync(join(dist, 'CNAME')));
+});
+
+test('the home page has a single canonical URL and a strong title', () => {
+  const page = html('index.html');
+  assert.ok(page.includes('<link rel="canonical" href="https://example.org/">'), 'canonical is not the bare root');
+  assert.ok(page.includes('<meta property="og:url" content="https://example.org/">'), 'og:url is not the bare root');
+  const title = (page.match(/<title>([^<]*)<\/title>/)?.[1] ?? '').replaceAll('&amp;', '&');
+  assert.ok(title.includes('Kakuro Solver, Trainer & Daily Puzzle'), `home title is ${title}`);
 });
 
 test('the cheat sheet lists every partition', () => {

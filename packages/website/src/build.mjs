@@ -39,11 +39,14 @@ const NAV = [
 /** The depth of a page path, for the relative links back to the site root. */
 const rootOf = (path) => '../'.repeat(path.split('/').length - 1);
 
+/** The public URL path of a page: a directory index loses its `index.html`, so the home page is ``. */
+const publicPath = (path) => (path === 'index.html' ? '' : path.replace(/(^|\/)index\.html$/, '$1'));
+
 /** One page of the site. `body` is already HTML. */
 function page({ path, title, description, body, extraHead = '', noindex = false, json = [] }) {
   const root = rootOf(path);
-  const canonical = SITE_URL ? `${SITE_URL}/${path}` : '';
-  const full = path === 'index.html' ? SITE : `${title}`;
+  const canonical = SITE_URL ? `${SITE_URL}/${publicPath(path)}` : '';
+  const full = title;
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -59,8 +62,14 @@ ${canonical ? `<link rel="canonical" href="${canonical}">` : ''}
 <meta property="og:site_name" content="${SITE}">
 <meta property="og:title" content="${esc(full)}">
 <meta property="og:description" content="${esc(description)}">
+${canonical ? `<meta property="og:url" content="${canonical}">` : ''}
 <meta property="og:image" content="${SITE_URL || 'https://kakurorevisited.com'}/icon-512.png">
+<meta property="og:image:width" content="512">
+<meta property="og:image:height" content="512">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="${esc(full)}">
+<meta name="twitter:description" content="${esc(description)}">
+<meta name="twitter:image" content="${SITE_URL || 'https://kakurorevisited.com'}/icon-512.png">
 <link rel="icon" href="${root}favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="${root}apple-touch-icon.png">
 <link rel="manifest" href="${root}site.webmanifest">
@@ -298,9 +307,9 @@ add(
   'index.html',
   page({
     path: 'index.html',
-    title: `${SITE}: Kakuro Solver, Trainer & AI Coach`,
+    title: 'Kakuro Solver, Trainer & Daily Puzzle | Kakuro Revisited',
     description:
-      'Play free Kakuro (Cross Sums) puzzles with an AI Coach that explains every step, a "Why not?" contradiction prover, five honest difficulty levels, a complete sum combinations cheat sheet and a daily puzzle.',
+      'Free Kakuro (Cross Sums) solver with step-by-step coaching, contradiction proofs, five difficulty levels, a sum-combination cheat sheet, and a daily puzzle.',
     body: homeBody,
     json: [
       {
@@ -829,7 +838,7 @@ if (SITE_URL) {
   const urls = pages
     .map(([p]) => p)
     .filter((p) => p !== '404.html')
-    .map((p) => `  <url><loc>${SITE_URL}/${p}</loc><changefreq>${p === 'index.html' ? 'weekly' : 'monthly'}</changefreq><priority>${p === 'index.html' ? '1.0' : p.startsWith('techniques/') || p.startsWith('learn/') ? '0.8' : '0.6'}</priority></url>`);
+    .map((p) => `  <url><loc>${SITE_URL}/${publicPath(p)}</loc><changefreq>${p === 'index.html' ? 'weekly' : 'monthly'}</changefreq><priority>${p === 'index.html' ? '1.0' : p.startsWith('techniques/') || p.startsWith('learn/') ? '0.8' : '0.6'}</priority></url>`);
   writeFileSync(
     join(out, 'sitemap.xml'),
     `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('\n')}\n</urlset>\n`,
