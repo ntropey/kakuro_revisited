@@ -14,11 +14,11 @@ export const MANUAL = [
 <p class="lede">Everything the app can do, in one place. The app is a progressive web app: it installs from the browser and works offline after the first visit.</p>
 
 <div class="cards">
-  <a class="card" href="${root}manual/rules.html"><h2>Rules and the board</h2><p>Clues, runs, the digit pad and pencil marks.</p></a>
-  <a class="card" href="${root}manual/first-puzzle.html"><h2>Your first puzzle</h2><p>A short walkthrough of the first five minutes in the app.</p></a>
-  <a class="card" href="${root}manual/hints.html"><h2>Hints, Coach and "Why not?"</h2><p>The four-stage walkthrough and the contradiction prover.</p></a>
-  <a class="card" href="${root}manual/daily.html"><h2>The Daily Puzzle</h2><p>One puzzle a day, the same for everyone, with a share card.</p></a>
-  <a class="card" href="${root}manual/keyboard.html"><h2>Keyboard and gestures</h2><p>Keys, the bottom sheet and the digit pad.</p></a>
+  <a class="card" href="${root}manual/rules"><h2>Rules and the board</h2><p>Clues, runs, the digit pad and pencil marks.</p></a>
+  <a class="card" href="${root}manual/first-puzzle"><h2>Your first puzzle</h2><p>A short walkthrough of the first five minutes in the app.</p></a>
+  <a class="card" href="${root}manual/hints"><h2>Hints, Coach and "Why not?"</h2><p>The four-stage walkthrough and the contradiction prover.</p></a>
+  <a class="card" href="${root}manual/daily"><h2>The Daily Puzzle</h2><p>One puzzle a day, the same for everyone, with a share card.</p></a>
+  <a class="card" href="${root}manual/keyboard"><h2>Keyboard and gestures</h2><p>Keys, the bottom sheet and the digit pad.</p></a>
 </div>
 
 <h2>What the app does</h2>
@@ -56,7 +56,7 @@ export const MANUAL = [
 <h2>Undo, redo and erase</h2>
 <p>The board tools under the puzzle undo and redo a move, wipe every pencil mark, open the solve path and start a "Why not?" proof.</p>
 
-<p>Next: <a href="${root}manual/first-puzzle.html">Your first puzzle</a>.</p>`,
+<p>Next: <a href="${root}manual/first-puzzle">Your first puzzle</a>.</p>`,
   },
   {
     path: 'manual/first-puzzle.html',
@@ -72,7 +72,7 @@ export const MANUAL = [
 <p>Tap a white cell, then a digit on the pad. If the digit is already there, tapping it again clears it. A digit that does not fit the solution is marked red, so you can see a slip straight away.</p>
 
 <h2>3. Find the easy steps</h2>
-<p>Look for a run with one empty cell, and for the small sums you know by heart. The <a href="${root}combinations.html">cheat sheet</a> has every sum.</p>
+<p>Look for a run with one empty cell, and for the small sums you know by heart. The <a href="${root}combinations">cheat sheet</a> has every sum.</p>
 
 <h2>4. Ask for a hint</h2>
 <p>Tap Coach. The coach gives you the next step in four stages, one at a time:</p>
@@ -86,7 +86,7 @@ export const MANUAL = [
 <h2>5. Try a "Why not?"</h2>
 <p>Select a cell, tap Why not?, and pick a candidate. The app places it on a copy of the board, follows the forced moves, and shows the conflict if there is one. If the digit is possible, it says so.</p>
 
-<p>Next: <a href="${root}manual/hints.html">Hints, Coach and "Why not?"</a>.</p>`,
+<p>Next: <a href="${root}manual/hints">Hints, Coach and "Why not?"</a>.</p>`,
   },
   {
     path: 'manual/hints.html',
@@ -120,7 +120,7 @@ export const MANUAL = [
 <h2>The solve path</h2>
 <p>Path lists the techniques the puzzle needs, hardest first, with how often each one appears. It is the plan the solver follows, and a good guide to what to learn next.</p>
 
-<p>Next: <a href="${root}manual/daily.html">The Daily Puzzle</a>.</p>`,
+<p>Next: <a href="${root}manual/daily">The Daily Puzzle</a>.</p>`,
   },
   {
     path: 'manual/daily.html',
@@ -141,7 +141,7 @@ export const MANUAL = [
 <h2>Difficulty</h2>
 <p>The Daily Puzzle uses the level in the settings, so you can keep the daily gentle or make it the hardest thing you do all day. Changing the level starts the current day's puzzle again at the new level.</p>
 
-<p>Next: <a href="${root}manual/keyboard.html">Keyboard and gestures</a>.</p>`,
+<p>Next: <a href="${root}manual/keyboard">Keyboard and gestures</a>.</p>`,
   },
   {
     path: 'manual/keyboard.html',
