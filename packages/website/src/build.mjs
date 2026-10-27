@@ -554,7 +554,7 @@ add(
 <p>The source code is on <a href="${REPO}">GitHub</a> under GPL-3.0-or-later. Bug reports and pull requests are welcome.</p>
 
 <h2>Contact</h2>
-<p>Open an issue on <a href="${REPO}/issues">GitHub</a>. There is no mailing list and no account system.</p>`,
+<p>Email <a href="mailto:support@revisitedlabs.com">support@revisitedlabs.com</a> or open an issue on <a href="${REPO}/issues">GitHub</a>. There is no mailing list and no account system.</p>`,
   }),
 );
 
@@ -589,6 +589,9 @@ add(
 
 <h2>Children</h2>
 <p>Kakuro Revisited is a puzzle game suitable for all ages and collects no personal information from anyone.</p>
+
+<h2>Contact</h2>
+<p>Questions or requests can be sent to <a href="mailto:support@revisitedlabs.com">support@revisitedlabs.com</a> or filed on <a href="${REPO}/issues">GitHub</a>.</p>
 
 <h2>Changes</h2>
 <p>If this policy changes, the date below changes with it.</p>
