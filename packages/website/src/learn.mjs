@@ -13,14 +13,14 @@ export const LEARN = [
     body: (root) => `<h1>Learn Kakuro</h1>
 <p class="lede">Kakuro, also called Cross Sums or Cross Addition, is a number puzzle that looks like a crossword and thinks like arithmetic. You do not guess. Every cell is decided by a clue sum and a set of digits that may not repeat.</p>
 
-<p>Start with <a href="${root}learn/how-to-solve-kakuro.html">How to solve Kakuro</a> if you have never played. It walks through a whole puzzle one step at a time.</p>
+<p>Start with <a href="${root}learn/how-to-solve-kakuro">How to solve Kakuro</a> if you have never played. It walks through a whole puzzle one step at a time.</p>
 
 <div class="cards">
-  <a class="card" href="${root}learn/how-to-solve-kakuro.html">
+  <a class="card" href="${root}learn/how-to-solve-kakuro">
     <h2>How to solve Kakuro</h2>
     <p>The rules, the first two steps, and how to keep going without guessing.</p>
   </a>
-  <a class="card" href="${root}combinations.html">
+  <a class="card" href="${root}combinations">
     <h2>Sum Combinations Cheat Sheet</h2>
     <p>Every sum, every run length, every set of digits. The one page worth bookmarking.</p>
   </a>
@@ -28,15 +28,15 @@ export const LEARN = [
     <h2>The technique guides</h2>
     <p>Twelve techniques from the last cell in a run to contradiction forcing.</p>
   </a>
-  <a class="card" href="${root}learn/kakuro-notation.html">
+  <a class="card" href="${root}learn/kakuro-notation">
     <h2>Notation</h2>
     <p>How to read r2c3, "Across 16" and a set like {7,9} in this site and in the app.</p>
   </a>
-  <a class="card" href="${root}learn/kakuro-glossary.html">
+  <a class="card" href="${root}learn/kakuro-glossary">
     <h2>Glossary</h2>
     <p>Run, clue, partition, Magic Block, candidate, forced move: the words this site uses.</p>
   </a>
-  <a class="card" href="${root}learn/kakuro-difficulty-levels.html">
+  <a class="card" href="${root}learn/kakuro-difficulty-levels">
     <h2>Difficulty levels</h2>
     <p>What Trivial, Easy, Medium, Hard and Extreme mean, and which techniques each needs.</p>
   </a>
@@ -70,7 +70,7 @@ export const LEARN = [
 
 <h2>3. Learn the small forced sums</h2>
 <p>Some sums have exactly one possible set of digits. In two cells, 3 must be 1 + 2 and 17 must be 8 + 9. In three cells, 6 must be 1 + 2 + 3 and 24 must be 7 + 8 + 9. These are called Magic Blocks, and knowing four or five of them by heart turns a slow start into a fast one.</p>
-<p>Use the <a href="${root}combinations.html">Sum Combinations Cheat Sheet</a> to look up any sum and run length.</p>
+<p>Use the <a href="${root}combinations">Sum Combinations Cheat Sheet</a> to look up any sum and run length.</p>
 
 <h2>4. Cross the runs</h2>
 <p>Every white cell belongs to two runs at once. Work out which digits each run can still hold, then take the digits that appear in both lists. Often only one digit survives, and the cell is solved.</p>
@@ -88,7 +88,7 @@ export const LEARN = [
 <h2>Where to go next</h2>
 <ul>
   <li><a href="${root}techniques/">The technique guides</a>, in the order the app uses them.</li>
-  <li><a href="${root}learn/kakuro-difficulty-levels.html">The difficulty levels</a>, to see what each level asks of you.</li>
+  <li><a href="${root}learn/kakuro-difficulty-levels">The difficulty levels</a>, to see what each level asks of you.</li>
   <li><a href="${root}play/">Play a puzzle</a> and let the coach help when you are stuck.</li>
 </ul>`,
   },
@@ -119,7 +119,7 @@ export const LEARN = [
 <p>The small digits inside an empty cell are pencil marks: the digits that cell can still hold. Placing a digit removes it from every other cell of the same run.</p>
 
 <h2>Partitions</h2>
-<p>A partition is a set of different digits that adds up to a sum. "17 in 2" means a run of two cells summing to 17; its only partition is {8,9}. The <a href="../combinations.html">cheat sheet</a> lists every partition.</p>`,
+<p>A partition is a set of different digits that adds up to a sum. "17 in 2" means a run of two cells summing to 17; its only partition is {8,9}. The <a href="../combinations">cheat sheet</a> lists every partition.</p>`,
   },
   {
     path: 'learn/kakuro-glossary.html',
@@ -166,11 +166,11 @@ export const LEARN = [
 
 <h2>Which techniques belong to which level</h2>
 <ul class="level-list">
-  <li><strong>Level 1</strong>: <a href="${root}techniques/last-cell-in-run.html">Last Cell in a Run</a>, <a href="${root}techniques/naked-single.html">Naked Single</a>, <a href="${root}techniques/magic-blocks.html">Magic Block</a>, <a href="${root}techniques/cross-run-intersection.html">Cross-Run Intersection</a></li>
-  <li><strong>Level 2</strong>: <a href="${root}techniques/hidden-single-in-run.html">Hidden Single in a Run</a>, <a href="${root}techniques/sum-bounds.html">Sum Bounds</a>, <a href="${root}techniques/mandatory-digit.html">Mandatory Digit</a></li>
-  <li><strong>Level 3</strong>: <a href="${root}techniques/naked-subsets-in-run.html">Naked Pairs and Triples in a Run</a>, <a href="${root}techniques/hidden-subsets-in-run.html">Hidden Pairs and Triples in a Run</a></li>
-  <li><strong>Level 4</strong>: <a href="${root}techniques/partition-matching.html">Forced Combination</a>, <a href="${root}techniques/locked-sum-residual.html">Locked Sum Residual</a></li>
-  <li><strong>Level 5</strong>: <a href="${root}techniques/contradiction-forcing.html">Contradiction Forcing</a></li>
+  <li><strong>Level 1</strong>: <a href="${root}techniques/last-cell-in-run">Last Cell in a Run</a>, <a href="${root}techniques/naked-single">Naked Single</a>, <a href="${root}techniques/magic-blocks">Magic Block</a>, <a href="${root}techniques/cross-run-intersection">Cross-Run Intersection</a></li>
+  <li><strong>Level 2</strong>: <a href="${root}techniques/hidden-single-in-run">Hidden Single in a Run</a>, <a href="${root}techniques/sum-bounds">Sum Bounds</a>, <a href="${root}techniques/mandatory-digit">Mandatory Digit</a></li>
+  <li><strong>Level 3</strong>: <a href="${root}techniques/naked-subsets-in-run">Naked Pairs and Triples in a Run</a>, <a href="${root}techniques/hidden-subsets-in-run">Hidden Pairs and Triples in a Run</a></li>
+  <li><strong>Level 4</strong>: <a href="${root}techniques/partition-matching">Forced Combination</a>, <a href="${root}techniques/locked-sum-residual">Locked Sum Residual</a></li>
+  <li><strong>Level 5</strong>: <a href="${root}techniques/contradiction-forcing">Contradiction Forcing</a></li>
 </ul>
 <p>The five levels match the app, and the <a href="${root}play/">play page</a> generates a puzzle at the level you pick. The Daily Puzzle uses its own level setting.</p>`,
   },

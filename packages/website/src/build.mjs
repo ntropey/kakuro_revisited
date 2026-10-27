@@ -31,16 +31,17 @@ const jsonld = (obj) => `<script type="application/ld+json">${JSON.stringify(obj
 const NAV = [
   ['learn/', 'Learn'],
   ['techniques/', 'Techniques'],
-  ['combinations.html', 'Sums'],
+  ['combinations', 'Sums'],
   ['manual/', 'Manual'],
-  ['about.html', 'About'],
+  ['about', 'About'],
 ];
 
 /** The depth of a page path, for the relative links back to the site root. */
 const rootOf = (path) => '../'.repeat(path.split('/').length - 1);
 
-/** The public URL path of a page: a directory index loses its `index.html`, so the home page is ``. */
-const publicPath = (path) => (path === 'index.html' ? '' : path.replace(/(^|\/)index\.html$/, '$1'));
+/** The public URL path of a page: a directory index loses its `index.html` and other pages lose `.html`. */
+const publicPath = (path) =>
+  path === 'index.html' ? '' : path.replace(/(^|\/)index\.html$/, '$1').replace(/\.html$/, '');
 
 /** One page of the site. `body` is already HTML. */
 function page({ path, title, description, body, extraHead = '', noindex = false, json = [] }) {
@@ -95,10 +96,10 @@ ${body}
     <p class="foot-links">
       <a href="${root}learn/">Learn</a>
       <a href="${root}techniques/">Techniques</a>
-      <a href="${root}combinations.html">Sum combinations</a>
+      <a href="${root}combinations">Sum combinations</a>
       <a href="${root}manual/">Manual</a>
-      <a href="${root}about.html">About</a>
-      <a href="${root}privacy.html">Privacy</a>
+      <a href="${root}about">About</a>
+      <a href="${root}privacy">Privacy</a>
       <a href="${REPO}">Source</a>
     </p>
     <p class="foot-links" style="font-size:.75rem;margin-top:8px">
@@ -108,7 +109,7 @@ ${body}
       <a href="https://nonogramrevisited.com/" target="_blank" rel="noopener noreferrer">Nonogram Revisited</a> ·
       <a href="https://logisimrevisited.com/" target="_blank" rel="noopener noreferrer">Logisim Revisited</a>
     </p>
-    <p class="small">Kakuro puzzles are generated and solved in your browser. This site uses Google AdSense; see the <a href="${root}privacy.html">privacy policy</a> for details and for the cookie choice.</p>
+    <p class="small">Kakuro puzzles are generated and solved in your browser. This site uses Google AdSense; see the <a href="${root}privacy">privacy policy</a> for details and for the cookie choice.</p>
   </div>
 </footer>
 </body>
@@ -160,7 +161,7 @@ const homeBody = `<section class="hero">
     <p class="hero-actions">
       <a class="btn primary" href="play/">Play a puzzle</a>
       <a class="btn" href="play/?daily=1">Daily puzzle</a>
-      <a class="btn ghost" href="learn/how-to-solve-kakuro.html">Learn the rules</a>
+      <a class="btn ghost" href="learn/how-to-solve-kakuro">Learn the rules</a>
     </p>
     <p class="small">Free, no account, works offline. Licensed GPL-3.0-or-later.</p>
   </div>
@@ -191,23 +192,23 @@ const homeBody = `<section class="hero">
 <section class="features">
   <h2>Why play here</h2>
   <div class="cards">
-    <a class="card" href="manual/hints.html">
+    <a class="card" href="manual/hints">
       <h3>Coach me, in four stages</h3>
       <p>The next step is broken into where to look, the pattern, the logic and the answer. Learn the technique instead of copying it.</p>
     </a>
-    <a class="card" href="manual/hints.html">
+    <a class="card" href="manual/hints">
       <h3>"Why not?" proofs</h3>
       <p>Choose a candidate and the app follows the forced chain to the exact conflict. Nothing is asserted without a reason.</p>
     </a>
-    <a class="card" href="combinations.html">
+    <a class="card" href="combinations">
       <h3>Every sum, every length</h3>
       <p>A complete, interactive Sum Combinations Cheat Sheet, from 3 in two cells to 45 in nine.</p>
     </a>
-    <a class="card" href="learn/kakuro-difficulty-levels.html">
+    <a class="card" href="learn/kakuro-difficulty-levels">
       <h3>Five honest levels</h3>
       <p>Trivial to Extreme. A puzzle is only labeled Easy when the solver reaches it with Easy techniques.</p>
     </a>
-    <a class="card" href="manual/daily.html">
+    <a class="card" href="manual/daily">
       <h3>A Daily Puzzle</h3>
       <p>One date-seeded puzzle a day, the same for everyone, with a share card for the result.</p>
     </a>
@@ -281,7 +282,7 @@ const homeBody = `<section class="hero">
     <h2>Tools that teach the technique</h2>
     <p>Pencil marks keep themselves up to date. The Hints panel lists every technique that is available on the board right now, with a count of how many steps each one gives.</p>
     <p>The coach caps itself at the hint level you choose, so an Easy puzzle stays Easy even when you ask for help.</p>
-    <p><a href="manual/hints.html">Read about hints and proofs</a>.</p>
+    <p><a href="manual/hints">Read about hints and proofs</a>.</p>
   </div>
 </section>
 
@@ -347,7 +348,7 @@ add(
 
 // ---------------------------------------------------------------- techniques
 
-const techHref = (root, slug) => `${root}techniques/${slug}.html`;
+const techHref = (root, slug) => `${root}techniques/${slug}`;
 
 const figFor = (ex, label) => {
   const marks = {
@@ -376,7 +377,7 @@ ${TECHNIQUE_GROUPS.map(
   <div class="cards">
     ${g.items
       .map(
-        (t) => `<a class="card" href="${t.slug}.html">
+        (t) => `<a class="card" href="${t.slug}">
       <p class="card-kicker">Level ${t.level}</p>
       <h3>${esc(t.name)}</h3>
       <p>${esc(t.summary)}</p>
@@ -388,7 +389,7 @@ ${TECHNIQUE_GROUPS.map(
 ).join('\n')}
 <section class="callout">
   <h2>Learn them in order</h2>
-  <p>If you are new, read <a href="../learn/how-to-solve-kakuro.html">How to solve Kakuro</a> first, then keep the <a href="../combinations.html">sum cheat sheet</a> open while you play.</p>
+  <p>If you are new, read <a href="../learn/how-to-solve-kakuro">How to solve Kakuro</a> first, then keep the <a href="../combinations">sum cheat sheet</a> open while you play.</p>
 </section>`;
 
 add(
@@ -408,7 +409,7 @@ add(
         hasPart: TECHNIQUES.map((t) => ({
           '@type': 'TechArticle',
           name: t.name,
-          url: `${SITE_URL}/techniques/${t.slug}.html`,
+          url: `${SITE_URL}/techniques/${t.slug}`,
         })),
       },
     ],
@@ -433,8 +434,8 @@ ${t.how.map((s) => `  <li>${esc(s)}</li>`).join('\n')}
 <h2>Practice it</h2>
 <p>Open <a href="../play/">the app</a>, choose a level that uses this technique, and ask the coach for the next step. Every hint links back to this guide.</p>
 <nav class="pager" aria-label="More techniques">
-  ${prev ? `<a class="btn" href="${prev.slug}.html">&larr; ${esc(prev.name)}</a>` : '<span></span>'}
-  ${next ? `<a class="btn" href="${next.slug}.html">${esc(next.name)} &rarr;</a>` : '<span></span>'}
+  ${prev ? `<a class="btn" href="${prev.slug}">&larr; ${esc(prev.name)}</a>` : '<span></span>'}
+  ${next ? `<a class="btn" href="${next.slug}">${esc(next.name)} &rarr;</a>` : '<span></span>'}
 </nav>`;
   add(
     `techniques/${t.slug}.html`,
@@ -449,7 +450,7 @@ ${t.how.map((s) => `  <li>${esc(s)}</li>`).join('\n')}
           '@type': 'TechArticle',
           headline: `${t.name}: Kakuro technique`,
           description: t.summary,
-          url: `${SITE_URL}/techniques/${t.slug}.html`,
+          url: `${SITE_URL}/techniques/${t.slug}`,
           proficiencyLevel: `Level ${t.level}`,
           inLanguage: 'en',
           author: { '@type': 'Organization', name: SITE },
@@ -485,7 +486,7 @@ add(
         '@type': 'WebPage',
         name: 'Kakuro Sum Combinations Cheat Sheet',
         description: 'Every partition of every Kakuro run length and sum.',
-        url: `${SITE_URL}/combinations.html`,
+        url: `${SITE_URL}/combinations`,
         inLanguage: 'en',
       },
     ],
@@ -514,7 +515,7 @@ ${entry.body(root)}`,
           '@type': 'Article',
           headline: entry.title,
           description: entry.description,
-          url: `${SITE_URL}/${entry.path}`,
+          url: `${SITE_URL}/${publicPath(entry.path)}`,
           inLanguage: 'en',
           author: { '@type': 'Organization', name: SITE },
         },

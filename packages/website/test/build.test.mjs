@@ -27,7 +27,7 @@ test('every technique has a page, listed on the index', () => {
   const index = html('techniques/index.html');
   for (const t of TECHNIQUES) {
     assert.ok(existsSync(join(dist, `techniques/${t.slug}.html`)), t.slug);
-    assert.ok(index.includes(`href="${t.slug}.html"`), t.slug);
+    assert.ok(index.includes(`href="${t.slug}"`), t.slug);
   }
   assert.equal(new Set(TECHNIQUES.map((t) => t.slug)).size, TECHNIQUES.length, 'duplicate slug');
 });
@@ -55,6 +55,10 @@ test('internal links resolve', () => {
       if (/^(https?:|mailto:|#|data:)/.test(href)) continue;
       const [pathPart] = href.split(/[?#]/);
       if (!pathPart) continue;
+      if (pathPart.endsWith('.html')) {
+        bad.push(`${file}: ${href} (ends in .html)`);
+        continue;
+      }
       const target = join(dirname(file), decodeURIComponent(pathPart));
       const candidates = [target, `${target}.html`, join(target, 'index.html')];
       if (!candidates.some((c) => existsSync(c) && statSync(c).isFile())) bad.push(`${file}: ${href}`);
@@ -80,9 +84,10 @@ test('the sitemap and robots file list the pages', () => {
   const sitemap = readFileSync(join(dist, 'sitemap.xml'), 'utf8');
   assert.ok(sitemap.includes('<loc>https://example.org/</loc>'));
   assert.ok(sitemap.includes('<loc>https://example.org/techniques/</loc>'));
-  assert.ok(sitemap.includes('<loc>https://example.org/techniques/magic-blocks.html</loc>'));
+  assert.ok(sitemap.includes('<loc>https://example.org/techniques/magic-blocks</loc>'));
   assert.ok(!sitemap.includes('/index.html'), 'no duplicate /index.html URLs');
-  assert.ok(!sitemap.includes('404.html'), '404 must not be indexed');
+  assert.ok(!sitemap.includes('.html</loc>'), 'no .html URLs in sitemap');
+  assert.ok(!sitemap.includes('404'), '404 must not be indexed');
   const robots = readFileSync(join(dist, 'robots.txt'), 'utf8');
   assert.match(robots, /Sitemap: https:\/\/example\.org\/sitemap\.xml/);
   assert.ok(existsSync(join(dist, 'CNAME')));
@@ -92,6 +97,13 @@ test('the home page has a single canonical URL and a strong title', () => {
   const page = html('index.html');
   assert.ok(page.includes('<link rel="canonical" href="https://example.org/">'), 'canonical is not the bare root');
   assert.ok(page.includes('<meta property="og:url" content="https://example.org/">'), 'og:url is not the bare root');
+  for (const p of [...allPages(), 'play/index.html']) {
+    const text = html(p);
+    const canonical = text.match(/<link rel="canonical" href="([^"]+)"/)?.[1] ?? '';
+    const ogUrl = text.match(/<meta property="og:url" content="([^"]+)"/)?.[1] ?? '';
+    assert.ok(!canonical.endsWith('.html'), `${p}: canonical ends in .html (${canonical})`);
+    assert.ok(!ogUrl.endsWith('.html'), `${p}: og:url ends in .html (${ogUrl})`);
+  }
   const title = (page.match(/<title>([^<]*)<\/title>/)?.[1] ?? '').replaceAll('&amp;', '&');
   assert.ok(title.includes('Kakuro Solver, Trainer & Daily Puzzle'), `home title is ${title}`);
 });
