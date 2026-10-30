@@ -162,3 +162,11 @@ test('user-facing text and docs use American spelling', () => {
   }
   assert.deepEqual(bad, [], 'British spellings found');
 });
+
+test('emits an Android App Links template', () => {
+  const links = JSON.parse(readFileSync(join(dist, '.well-known/assetlinks.json'), 'utf8'));
+  assert.equal(links[0].relation[0], 'delegate_permission/common.handle_all_urls');
+  assert.equal(links[0].target.namespace, 'android_app');
+  assert.equal(links[0].target.package_name, 'com.revisitedlabs.kakuro');
+  assert.equal(links[0].target.sha256_cert_fingerprints[0], 'PLACEHOLDER_SHA256_CERT_FINGERPRINT');
+});

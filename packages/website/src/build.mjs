@@ -852,5 +852,24 @@ if (SITE_URL) {
   if (host && !host.endsWith('github.io')) writeFileSync(join(out, 'CNAME'), `${host}\n`);
 }
 
+// Android App Links: template with placeholder package name and SHA256 signing fingerprint.
+mkdirSync(join(out, '.well-known'), { recursive: true });
+writeFileSync(
+  join(out, '.well-known', 'assetlinks.json'),
+  JSON.stringify(
+    [
+      {
+        relation: ['delegate_permission/common.handle_all_urls'],
+        target: {
+          namespace: 'android_app',
+          package_name: 'com.revisitedlabs.kakuro',
+          sha256_cert_fingerprints: ['PLACEHOLDER_SHA256_CERT_FINGERPRINT'],
+        },
+      },
+    ],
+    null,
+    2,
+  ) + '\n',
+);
 const pageCount = readdirSync(out, { recursive: true }).filter((f) => String(f).endsWith('.html')).length;
 console.log(`${SITE}: ${pageCount} pages written to ${out}`);
