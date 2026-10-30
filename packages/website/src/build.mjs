@@ -64,13 +64,13 @@ ${canonical ? `<link rel="canonical" href="${canonical}">` : ''}
 <meta property="og:title" content="${esc(full)}">
 <meta property="og:description" content="${esc(description)}">
 ${canonical ? `<meta property="og:url" content="${canonical}">` : ''}
-<meta property="og:image" content="${SITE_URL || 'https://kakurorevisited.com'}/icon-512.png">
-<meta property="og:image:width" content="512">
-<meta property="og:image:height" content="512">
+<meta property="og:image" content="${SITE_URL || 'https://kakurorevisited.com'}/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="${esc(full)}">
 <meta name="twitter:description" content="${esc(description)}">
-<meta name="twitter:image" content="${SITE_URL || 'https://kakurorevisited.com'}/icon-512.png">
+<meta name="twitter:image" content="${SITE_URL || 'https://kakurorevisited.com'}/og-image.png">
 <link rel="icon" href="${root}favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="${root}apple-touch-icon.png">
 <link rel="manifest" href="${root}site.webmanifest">
@@ -818,7 +818,7 @@ writeFileSync(
   ),
 );
 
-for (const f of ['icon.svg', 'favicon.svg', 'apple-touch-icon.png', 'icon-512.png', 'icon-192.png']) {
+for (const f of ['icon.svg', 'favicon.svg', 'apple-touch-icon.png', 'icon-512.png', 'icon-192.png', 'og-image.png']) {
   const src = join(appPublic, f);
   if (existsSync(src)) cpSync(src, join(out, f));
 }
