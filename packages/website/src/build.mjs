@@ -100,6 +100,7 @@ ${body}
       <a href="${root}manual/">Manual</a>
       <a href="${root}about">About</a>
       <a href="${root}privacy">Privacy</a>
+      <a href="https://apps.microsoft.com/detail/9P9NXJ6MFLJQ" target="_blank" rel="noopener noreferrer">Microsoft Store</a>
       <a href="${REPO}">Source</a>
     </p>
     <p class="foot-links" style="font-size:.75rem;margin-top:8px">
@@ -133,7 +134,7 @@ const homeFaq = [
   ],
   [
     'Does it work offline?',
-    'Yes. Kakuro Revisited is a progressive web app. After the first visit you can install it and keep playing with no connection, because the generator and the solver run in the browser.',
+    'Yes. Kakuro Revisited is a progressive web app. After the first visit you can install it from your browser or download it free from the Microsoft Store, and keep playing with no connection, because the generator and the solver run entirely on your device.',
   ],
   [
     'Do I ever have to guess?',
@@ -161,6 +162,7 @@ const homeBody = `<section class="hero">
     <p class="hero-actions">
       <a class="btn primary" href="play/">Play a puzzle</a>
       <a class="btn" href="play/?daily=1">Daily puzzle</a>
+      <a class="btn" href="https://apps.microsoft.com/detail/9P9NXJ6MFLJQ" target="_blank" rel="noopener noreferrer" title="Get Kakuro Revisited on Microsoft Store"><svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" style="vertical-align:-2px;margin-right:6px" aria-hidden="true"><path d="M0 2.222L6.5 1.333v6.222H0V2.222zm7.5-1.469L16 0v7.556H7.5V.753zM0 8.444h6.5v6.223L0 13.778V8.444zm7.5 0H16V16l-8.5-.753V8.444z"/></svg>Microsoft Store</a>
       <a class="btn ghost" href="learn/how-to-solve-kakuro">Learn the rules</a>
     </p>
     <p class="small">Free, no account, works offline. Licensed GPL-3.0-or-later.</p>
