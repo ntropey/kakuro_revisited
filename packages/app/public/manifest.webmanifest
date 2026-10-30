@@ -3,7 +3,7 @@
   "name": "Kakuro Revisited",
   "short_name": "Kakuro",
   "description": "A Kakuro (Cross Sums) solver and trainer with logical hints and AI Coach.",
-  "start_url": "/",
+  "start_url": "/play/",
   "scope": "/",
   "display": "standalone",
   "background_color": "#F5F2EA",
