@@ -53,6 +53,7 @@ function page({ path, title, description, body, extraHead = '', noindex = false,
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="google-adsense-account" content="ca-pub-6409516653999633">
 <title>${esc(full)}</title>
 <meta name="description" content="${esc(description)}">
 <meta name="theme-color" content="#f5f2ea" media="(prefers-color-scheme: light)">
