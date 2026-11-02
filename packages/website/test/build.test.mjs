@@ -168,5 +168,5 @@ test('emits an Android App Links template', () => {
   assert.equal(links[0].relation[0], 'delegate_permission/common.handle_all_urls');
   assert.equal(links[0].target.namespace, 'android_app');
   assert.equal(links[0].target.package_name, 'com.revisitedlabs.kakuro');
-  assert.equal(links[0].target.sha256_cert_fingerprints[0], 'PLACEHOLDER_SHA256_CERT_FINGERPRINT');
+  assert.ok(links[0].target.sha256_cert_fingerprints.includes('69:D0:EA:B5:8C:95:24:17:38:1F:B3:D3:D0:B8:43:D3:5E:4E:7D:02:FD:BC:68:19:AC:77:A6:90:24:0C:B9:FD'));
 });

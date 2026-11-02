@@ -865,7 +865,10 @@ writeFileSync(
         target: {
           namespace: 'android_app',
           package_name: 'com.revisitedlabs.kakuro',
-          sha256_cert_fingerprints: ['PLACEHOLDER_SHA256_CERT_FINGERPRINT'],
+          sha256_cert_fingerprints: [
+            '69:D0:EA:B5:8C:95:24:17:38:1F:B3:D3:D0:B8:43:D3:5E:4E:7D:02:FD:BC:68:19:AC:77:A6:90:24:0C:B9:FD',
+            'D6:3C:52:3A:48:24:0C:36:88:E3:E2:62:F3:4A:8A:47:07:96:38:50:DF:B0:49:2B:C0:20:B9:BE:C6:44:75:D0',
+          ],
         },
       },
     ],
