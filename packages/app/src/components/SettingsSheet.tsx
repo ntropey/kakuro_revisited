@@ -115,7 +115,11 @@ export function SettingsSheet({ settings, onChange, onClose }: SettingsSheetProp
       </fieldset>
 
       <p className="hint-text">
-        Learn the techniques on the website:{' '}
+        Part of{' '}
+        <a href="https://revisitedlabs.com/" target="_blank" rel="noreferrer">
+          Revisited Labs
+        </a>
+        . Learn the techniques on the website:{' '}
         <a href="https://kakurorevisited.com/techniques/" target="_blank" rel="noreferrer">
           the technique guides
         </a>
