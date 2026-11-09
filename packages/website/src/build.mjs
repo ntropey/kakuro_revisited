@@ -846,6 +846,9 @@ if (SITE_URL) {
     .map(([p]) => p)
     .filter((p) => p !== '404.html')
     .map((p) => `  <url><loc>${SITE_URL}/${publicPath(p)}</loc><changefreq>${p === 'index.html' ? 'weekly' : 'monthly'}</changefreq><priority>${p === 'index.html' ? '1.0' : p.startsWith('techniques/') || p.startsWith('learn/') ? '0.8' : '0.6'}</priority></url>`);
+  if (existsSync(appDist)) {
+    urls.push(`  <url><loc>${SITE_URL}/play/</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>`);
+  }
   writeFileSync(
     join(out, 'sitemap.xml'),
     `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('\n')}\n</urlset>\n`,
