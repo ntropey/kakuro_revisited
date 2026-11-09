@@ -83,6 +83,7 @@ test('every page carries the consent loader and the AdSense gate', () => {
 test('the sitemap and robots file list the pages', () => {
   const sitemap = readFileSync(join(dist, 'sitemap.xml'), 'utf8');
   assert.ok(sitemap.includes('<loc>https://example.org/</loc>'));
+  assert.ok(sitemap.includes('<loc>https://example.org/play/</loc>'));
   assert.ok(sitemap.includes('<loc>https://example.org/techniques/</loc>'));
   assert.ok(sitemap.includes('<loc>https://example.org/techniques/magic-blocks</loc>'));
   assert.ok(!sitemap.includes('/index.html'), 'no duplicate /index.html URLs');
