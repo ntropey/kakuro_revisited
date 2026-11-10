@@ -92,6 +92,15 @@ test('the sitemap and robots file list the pages', () => {
   const robots = readFileSync(join(dist, 'robots.txt'), 'utf8');
   assert.match(robots, /Sitemap: https:\/\/example\.org\/sitemap\.xml/);
   assert.ok(existsSync(join(dist, 'CNAME')));
+  assert.ok(existsSync(join(dist, '_headers')), '_headers must exist');
+  const headers = readFileSync(join(dist, '_headers'), 'utf8');
+  assert.ok(headers.includes('max-age=31536000, immutable'), '_headers configures immutable cache');
+});
+
+test('the home page links to Microsoft Store and Google Play', () => {
+  const page = html('index.html');
+  assert.ok(page.includes('https://apps.microsoft.com/detail/9P9NXJ6MFLJQ'), 'links to Microsoft Store');
+  assert.ok(page.includes('https://play.google.com/store/apps/details?id=com.revisitedlabs.kakuro'), 'links to Google Play');
 });
 
 test('the home page has a single canonical URL and a strong title', () => {
