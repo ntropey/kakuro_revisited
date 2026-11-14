@@ -855,10 +855,25 @@ if (SITE_URL) {
     join(out, 'sitemap.xml'),
     `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('\n')}\n</urlset>\n`,
   );
-  writeFileSync(join(out, 'robots.txt'), `User-agent: *\nAllow: /\n\nSitemap: ${SITE_URL}/sitemap.xml\n`);
+  writeFileSync(join(out, 'robots.txt'), `User-agent: *\nContent-Signal: search=yes, ai-input=yes, ai-train=no\nAllow: /\n\nSitemap: ${SITE_URL}/sitemap.xml\n`);
   const host = new URL(SITE_URL).host;
   if (host && !host.endsWith('github.io')) writeFileSync(join(out, 'CNAME'), `${host}\n`);
 }
+writeFileSync(
+  join(out, 'llms.txt'),
+  [
+    '# Kakuro Revisited',
+    '',
+    '> Offline-capable Kakuro puzzle player, sum-partition solver, and step-by-step logical deduction coach.',
+    '',
+    '## Links',
+    '- [Home](https://kakurorevisited.com/)',
+    '- [Play Kakuro](/play/)',
+    '- [Techniques](/techniques/)',
+    '- [Revisited Labs](https://revisitedlabs.com/)',
+    '',
+  ].join('\n'),
+);
 
 // Cloudflare Pages edge cache headers & security policies
 writeFileSync(
