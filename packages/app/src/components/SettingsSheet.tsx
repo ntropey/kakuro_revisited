@@ -2,6 +2,7 @@
  * Kakuro Revisited PWA. GPL-3.0-or-later; see LICENSE.
  * The settings sheet.
  */
+import { Capacitor } from '@capacitor/core';
 import { HINT_LEVEL_NAMES } from '../protocol';
 import { LEVEL_NAMES, type Settings } from '../ui';
 
@@ -12,6 +13,11 @@ export interface SettingsSheetProps {
 }
 
 export function SettingsSheet({ settings, onChange, onClose }: SettingsSheetProps) {
+  // A link to the live site would leave the native shell (Capacitor hands top-level navigations to
+  // Safari/Chrome, where the PWA can be installed again), so the native build shows text only.
+  const isNative =
+    Capacitor.isNativePlatform() ||
+    (typeof window !== 'undefined' && window.location.protocol === 'capacitor:');
   const set = <K extends keyof Settings>(key: K, value: Settings[K]) =>
     onChange({ ...settings, [key]: value });
 
@@ -116,14 +122,23 @@ export function SettingsSheet({ settings, onChange, onClose }: SettingsSheetProp
 
       <p className="hint-text">
         Part of{' '}
-        <a href="https://revisitedlabs.com/" target="_blank" rel="noreferrer">
-          Revisited Labs
-        </a>
-        . Learn the techniques on the website:{' '}
-        <a href="https://kakurorevisited.com/techniques/" target="_blank" rel="noreferrer">
-          the technique guides
-        </a>
-        .
+        {isNative ? (
+          'Revisited Labs'
+        ) : (
+          <a href="https://revisitedlabs.com/" target="_blank" rel="noreferrer">
+            Revisited Labs
+          </a>
+        )}
+        .{' '}
+        {isNative ? null : (
+          <>
+            Learn the techniques on the website:{' '}
+            <a href="https://kakurorevisited.com/techniques/" target="_blank" rel="noreferrer">
+              the technique guides
+            </a>
+            .
+          </>
+        )}
       </p>
     </div>
   );
