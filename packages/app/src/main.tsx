@@ -2,6 +2,7 @@
  * Kakuro Revisited PWA. GPL-3.0-or-later; see LICENSE.
  * The entry point.
  */
+import { Capacitor } from '@capacitor/core';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import '@fontsource/newsreader/latin-500.css';
@@ -22,9 +23,13 @@ if (root) {
   );
 }
 
-// The service worker makes the app work offline. The path is relative to the page, because the
-// app is served from /play/ on the site and from the root elsewhere.
-if ('serviceWorker' in navigator) {
+// The service worker makes the PWA work offline. The path is relative to the page, because the
+// app is served from /play/ on the site and from the root elsewhere. The native builds ship their
+// files in the binary, so a service worker there only adds a stale-cache failure mode.
+const isNativeShell =
+  Capacitor.isNativePlatform() ||
+  (typeof window !== 'undefined' && window.location.protocol === 'capacitor:');
+if ('serviceWorker' in navigator && !isNativeShell) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('./sw.js').catch(() => {
       /* the app works without it */
