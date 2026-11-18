@@ -211,6 +211,9 @@ h3 {
   gap: 0.75rem;
   flex-wrap: wrap;
   padding: 0.6rem 0.9rem;
+  padding-top: calc(0.6rem + env(safe-area-inset-top, 0px));
+  padding-right: calc(0.9rem + env(safe-area-inset-right, 0px));
+  padding-left: calc(0.9rem + env(safe-area-inset-left, 0px));
   background: var(--card);
   border-bottom: 1px solid var(--line);
   position: sticky;
@@ -291,6 +294,8 @@ h3 {
   gap: 1rem;
   padding: 1rem;
   padding-bottom: 5.5rem;
+  padding-right: calc(1rem + env(safe-area-inset-right, 0px));
+  padding-left: calc(1rem + env(safe-area-inset-left, 0px));
 }
 
 .board-area {
@@ -958,6 +963,7 @@ input[type='number'] {
   box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.14);
   display: flex;
   flex-direction: column;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
   transition:
     transform 0.18s ease,
     max-height 0.18s ease;
@@ -968,7 +974,7 @@ input[type='number'] {
 .sheet.snap-peek {
   max-height: 78vh;
   max-height: 78dvh;
-  transform: translateY(calc(100% - 36px));
+  transform: translateY(calc(100% - 36px - env(safe-area-inset-bottom, 0px)));
 }
 
 .sheet.snap-half {
@@ -1028,6 +1034,7 @@ input[type='number'] {
   justify-content: center;
   z-index: 40;
   padding: 1rem;
+  padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
 }
 
 .modal {
@@ -1065,11 +1072,16 @@ input[type='number'] {
 @media (max-width: 600px) {
   .layout {
     padding: 0.6rem;
+    padding-right: calc(0.6rem + env(safe-area-inset-right, 0px));
+    padding-left: calc(0.6rem + env(safe-area-inset-left, 0px));
   }
 
   .top-bar {
     gap: 0.4rem 0.6rem;
     padding: 0.5rem 0.7rem;
+    padding-top: calc(0.5rem + env(safe-area-inset-top, 0px));
+    padding-right: calc(0.7rem + env(safe-area-inset-right, 0px));
+    padding-left: calc(0.7rem + env(safe-area-inset-left, 0px));
   }
 
   .puzzle-meta {
